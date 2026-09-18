@@ -1,0 +1,12 @@
+# Базы данных SQLite (будущий слой хранения)
+*.sqlite
+*.sqlite3
+*.db
+
+# Переменные окружения и ключи
+.env
+*.env
+
+# Системные файлы Windows
+Thumbs.db
+desktop.ini
