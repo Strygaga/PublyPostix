@@ -1,0 +1,34 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: publypostix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: publypostix
+      POSTGRES_USER: publy_admin
+      POSTGRES_PASSWORD: publy_secure_password_2026
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docs/schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+    ports:
+      - "5432:5432"
+
+  n8n:
+    image: docker.n8n.io/n8nio/n8n
+    container_name: publypostix-n8n
+    restart: unless-stopped
+    environment:
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_WEBHOOK_URL=https://engross-android-underfoot.ngrok-free.dev/
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n
+    depends_on:
+      - postgres
+
+volumes:
+  postgres_data:
+  n8n_data:
