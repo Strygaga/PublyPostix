@@ -1,0 +1,1267 @@
+{
+  "name": "PublyPostix",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message",
+          "callback_query"
+        ],
+        "additionalFields": {
+          "download": false
+        }
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -960,
+        96
+      ],
+      "id": "2aa7529a-eef8-43b6-9ef2-392264202d94",
+      "name": "[TG] Приём сообщений",
+      "webhookId": "bd6cd8fc-7db0-40e5-a58f-4a6fdf6d6ffc",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Принимает входящие апдейты бота (текст, chat_id, профиль автора)"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "👋 Добро пожаловать в PublyPostix!\n\nЕдиный пульт для публикации контента в соцсети.\n\n📊 Статус подключений:\n• 📸 Instagram Reels: ❌ Не подключен\n• 🔵 ВКонтакте: ❌ Не подключен\n• ▶️ YouTube Shorts: ❌ Не подключен\n\nВыберите действие ниже:",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚙️ Подключить соцсети",
+                    "additionalFields": {
+                      "callback_data": "menu_connect"
+                    }
+                  },
+                  {
+                    "text": "✍️ Создать пост",
+                    "additionalFields": {
+                      "callback_data": "menu_create_post"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        0
+      ],
+      "id": "b079c2d2-f384-438a-9285-90ceae4cbf8e",
+      "name": "[TG] Экран: Главное меню",
+      "webhookId": "8ed71ad0-38cc-4e57-ae73-a4b0c2845619",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Отправляет первичное сообщение-дашборд с Inline-кнопками навигации"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message?.text }}",
+                    "rightValue": "/start",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "daa2dcc3-904b-406d-bd8c-4a15e208f5ba"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Start Command"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "1a86d8be-553d-4e10-8ec9-267765016958",
+                    "leftValue": "={{ $json.callback_query?.data }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Button Click"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "fba293bc-e4c8-4b48-b865-1b4bc70f4b8b",
+                    "leftValue": "={{ $json.message?.video }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "object",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Video Received"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -576,
+        80
+      ],
+      "id": "38ec46fb-9344-49e8-85a0-87c20c6ecbfd",
+      "name": "[Logic] Роутер событий",
+      "notesInFlow": true,
+      "notes": "Разделяет команду /start и клики по Inline-кнопкам (callback_query)"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "menu_connect",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "e239b384-f11d-4c9d-83fe-10ef83b81d88"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Connect Hub"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "15eae8ff-305f-4861-9627-bcd330972307",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "menu_main",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Back to Main"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "7c891ead-503b-4208-9ae7-fa3ea7344a7a",
+                    "leftValue": "={{ $json.callback_query.data }}",
+                    "rightValue": "connect_ig",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Connect Instagram"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -352,
+        272
+      ],
+      "id": "16b73d11-4c54-457a-b5a4-13c24f280de6",
+      "name": "[Logic] Роутер кнопок",
+      "notesInFlow": true,
+      "notes": "Распределяет нажатия кнопок по callback_data (menu_connect, menu_main, connect_ig)"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "messageId": "={{ $json.callback_query.message.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "⚙️ Управление подключениями\n\nВыберите платформу, которую хотите настроить:",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📸 Instagram Reels",
+                    "additionalFields": {
+                      "callback_data": "connect_ig"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔵 ВКонтакте",
+                    "additionalFields": {
+                      "callback_data": "connect_vk"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "▶️ YouTube Short",
+                    "additionalFields": {
+                      "callback_data": "connect_yt"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "◀️ Назад в меню",
+                    "additionalFields": {
+                      "callback_data": "menu_main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        16
+      ],
+      "id": "f7a78b3f-59c4-4551-92a7-5405b273c7c8",
+      "name": "[TG] Экран: Хаб подключений",
+      "webhookId": "971afcbb-dac4-45b9-974a-08753143ab3c",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Редактирует текущее сообщение, показывая список соцсетей и кнопку назад"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "messageId": "={{ $json.callback_query.message.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "👋 Добро пожаловать в PublyPostix!\n\nЕдиный пульт для публикации контента в соцсети.\n\n📊 Статус подключений:\n• 📸 Instagram Reels: ❌ Не подключен\n• 🔵 ВКонтакте: ❌ Не подключен\n• ▶️ YouTube Shorts: ❌ Не подключен\n\nВыберите действие ниже:",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚙️ Подключить соцсети",
+                    "additionalFields": {
+                      "callback_data": "menu_connect"
+                    }
+                  },
+                  {
+                    "text": "✍️ Создать пост",
+                    "additionalFields": {
+                      "callback_data": "menu_create_post"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        208
+      ],
+      "id": "ee5cb34f-8f85-4044-950d-f720baa8b8f0",
+      "name": "[TG] Экран: Возврат в главное меню",
+      "webhookId": "f3b02fb1-9a97-46e3-9a21-b46a7fa3eb27",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Возвращает текст дашборда и стартовые кнопки при нажатии кнопки Назад"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.callback_query.message.chat.id }}",
+        "messageId": "={{ $json.callback_query.message.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "📸 Подключение Instagram Reels\n\nДля официальной публикации видео аккаунт должен быть профессиональным и иметь технический шлюз. \n\nЗайдите в мобильное приложение Instagram (займет 1 минуту):\n1. Меню (три полоски) ➔ «Для профессионалов» ➔ переключитесь на «Аккаунт автора».\n2. В том же меню откройте «Связанные аккаунты» (или «Страница») ➔ нажмите «Создать страницу на Facebook». \n\nВходить на сайт Facebook или вести эту страницу не потребуется — Instagram создаст пустой технический мостик автоматически.\n\nПосле этого нажмите кнопку авторизации ниже:",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔗 Авторизоваться через Meta",
+                    "additionalFields": {
+                      "url": "=https://www.instagram.com/oauth/authorize?force_reauth=true&client_id={{ $env.META_CLIENT_ID }}&redirect_uri=https://engross-android-underfoot.ngrok-free.dev/webhook/oauth-instagram-callback&response_type=code&scope=instagram_business_basic%2Cinstagram_business_manage_messages%2Cinstagram_business_manage_comments%2Cinstagram_business_content_publish%2Cinstagram_business_manage_insights&state={{ $json.callback_query.message.chat.id }}_{{ $json.callback_query.message.message_id }}"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "◀️ Назад",
+                    "additionalFields": {
+                      "callback_data": "menu_connect"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -128,
+        400
+      ],
+      "id": "f689b175-e790-4ae4-bfdc-d3c9cb81fdff",
+      "name": "[TG] Экран: Онбординг Instagram",
+      "webhookId": "4f0e93f8-aa93-460e-9c2c-92b2ef6ed53a",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Показывает пошаговую инструкцию по связке Instagram + FB и кнопку OAuth"
+    },
+    {
+      "parameters": {
+        "path": "oauth-instagram-callback",
+        "options": {
+          "responseData": "Авторизация прошла успешно! Вы можете закрыть эту вкладку и вернуться в Telegram-бот."
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -800,
+        1232
+      ],
+      "id": "ba8e8bb9-a28a-49d9-8d0b-0e261d794306",
+      "name": "[Auth] Webhook Instagram OAuth",
+      "webhookId": "3362216e-e4e4-4992-a434-c021f5b4a4c6",
+      "notesInFlow": true,
+      "notes": "Ловит code и state из редиректа Meta"
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $('[Auth] Webhook Instagram OAuth').item.json.query.state.split('_')[0] }}",
+        "messageId": "={{ $('[Auth] Webhook Instagram OAuth').item.json.query.state.split('_')[1] }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        1136
+      ],
+      "id": "17dd1471-9b27-403a-a566-9be6a74f5948",
+      "name": "[TG] Удалить экран онбординга",
+      "webhookId": "709684f4-f1a8-4473-95e4-3e50a3c6e811",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Стирает старое меню по ID из query-параметра state"
+    },
+    {
+      "parameters": {
+        "url": "https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $json.message.video.file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -352,
+        592
+      ],
+      "id": "af49f6b3-e449-4f60-a35d-af4b1b6e7ba1",
+      "name": "[TG] Get File Path",
+      "notesInFlow": true,
+      "notes": "Запрашивает путь к файлу в Telegram по file_id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Meta] Обмен code на Access Token').first().json.user_id }}/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[Meta] Обмен code на Access Token').first().json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"media_type\": \"REELS\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path,\n    \"caption\": $('[TG] Приём сообщений').first().json.message?.caption || \"\"\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -128,
+        592
+      ],
+      "id": "e495905a-b34c-4c3b-ab1d-7b396a2a0318",
+      "name": "[Meta] Init Reels",
+      "notesInFlow": true,
+      "notes": "Создаёт медиа-контейнер и возвращает creation_id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Meta] Обмен code на Access Token').first().json.user_id }}/media_publish",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[Meta] Обмен code на Access Token').first().json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"creation_id\": \"{{ $('[Meta] Init Reels').first().json.id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        992,
+        304
+      ],
+      "id": "7b298314-b31e-4b79-b67b-ea904a4d35e8",
+      "name": "[Meta] Publish Reels",
+      "notesInFlow": true,
+      "notes": "Публикует готовый контейнер в ленту профиля"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[TG] Приём сообщений').item.json.message.chat.id }}",
+        "text": "=🎉 Reels успешно опубликован в Instagram!\n\n🆔 ID публикации: {{ $json.id }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚙️ Управление подключениями",
+                    "additionalFields": {
+                      "callback_data": "=menu_connect"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "menu_main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1216,
+        304
+      ],
+      "id": "572585e2-406b-4f62-939d-a015a0f17e2a",
+      "name": "[TG] Success Alert",
+      "webhookId": "21eab895-7e4f-4799-a4c0-e08b6fceef9c",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Отправляет пользователю подтверждение и media_id"
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $json.message.chat.id }}",
+        "messageId": "={{ $json.message.message_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -336,
+        -192
+      ],
+      "id": "9c440719-ec36-4a4e-b052-848d5dcd955e",
+      "name": "[TG] Удалить команду пользователя",
+      "webhookId": "709684f4-f1a8-4473-95e4-3e50a3c6e811",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Удаляет входящий текст из чата"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.instagram.com/oauth/access_token",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "client_id",
+              "value": "{{ $env.META_CLIENT_ID }}"
+            },
+            {
+              "name": "client_secret",
+              "value": "{{ $env.META_CLIENT_SECRET }}"
+            },
+            {
+              "name": "grant_type",
+              "value": "authorization_code"
+            },
+            {
+              "name": "redirect_uri",
+              "value": "https://engross-android-underfoot.ngrok-free.dev/webhook/oauth-instagram-callback"
+            },
+            {
+              "name": "code",
+              "value": "={{ $json.query.code }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -576,
+        1232
+      ],
+      "id": "86640a8c-902d-4f44-881e-5a305c2f8a2c",
+      "name": "[Meta] Обмен code на Access Token",
+      "notesInFlow": true,
+      "notes": "Меняет разовый код на токен и user_id"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[Auth] Webhook Instagram OAuth').item.json.query.state.split('_')[0] }}",
+        "text": "=🎉 Instagram успешно подключен!\n\n👤 ID аккаунта: {{ $json.user_id }}\n✅ Разрешение на публикацию Reels получено.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚙️ Управление подключениями",
+                    "additionalFields": {
+                      "callback_data": "=menu_connect"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "menu_main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -112,
+        1328
+      ],
+      "id": "721ecc9a-4e95-4f9c-9131-a223b62c54c4",
+      "name": "[TG] Экран: Успех авторизации Meta",
+      "webhookId": "21eab895-7e4f-4799-a4c0-e08b6fceef9c",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Уведомляет об успехе и выводит кнопки навигации"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[TG] Приём сообщений').first().json.message.chat.id }}",
+        "text": "⏳ Видео получено и отправлено в Meta.\nНачинаем транскодирование Reels...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        96,
+        592
+      ],
+      "id": "6f1a34f8-4393-42e7-9bb3-2896dca95a91",
+      "name": "[TG] Отправить статус",
+      "webhookId": "7ab29edf-5fa2-4637-8b22-55d2b72138fc",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        320,
+        592
+      ],
+      "id": "923cc409-a626-4d1d-9e6e-3a0d352d7039",
+      "name": "[System] Пауза 5 сек",
+      "webhookId": "f15b9323-b100-47b4-bb72-0e6203bd0f0f"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Meta] Init Reels').first().json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[Meta] Обмен code на Access Token').first().json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        544,
+        512
+      ],
+      "id": "97daaf05-b94d-4748-9f7f-1670eb9c1d41",
+      "name": "[Meta] Проверить статус"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('[TG] Приём сообщений').first().json.message.chat.id }}",
+        "messageId": "={{ $('[TG] Отправить статус').first().json.message_id || $('[TG] Отправить статус').first().json.result.message_id }}",
+        "text": "=⚙️ Идёт кодирование Reels на серверах Meta...\nПожалуйста, подождите {{ ['⏳', '⌛', '🔄', '⚙️'][$runIndex % 4] }} (проверка {{ $runIndex + 1 }})",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        992,
+        688
+      ],
+      "id": "64bd93d3-832f-492b-8401-3d8890994631",
+      "name": "[TG] Статус: Обработка",
+      "webhookId": "2bdd32ba-5d4a-4700-ab2e-c0afb6f1474b",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status_code }}",
+                    "rightValue": "FINISHED",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "990d9d00-5a0f-43f8-9d26-23f95b608353"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Success"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "0b0b5c39-32d0-4afb-9bff-c4228c4f35b8",
+                    "leftValue": false,
+                    "rightValue": "ERROR",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Timeout or Error"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "loose",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "46f0620a-57b8-4c4b-b236-8124b0101d06",
+                    "leftValue": "={{ $json.status_code }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "In Progress"
+            }
+          ]
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        768,
+        496
+      ],
+      "id": "53c2dcbd-942f-4c8e-b884-97d37cf8fe44",
+      "name": "[Logic] Проверка готовности Reels"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[TG] Приём сообщений').first().json.message.chat.id }}",
+        "text": "=❌ Не удалось опубликовать Reels в Instagram.\n\nПричина: {{ $json.status_code === 'ERROR' ? 'Серверы Meta отклонили видеофайл (проверьте формат).' : 'Превышено время ожидания обработки (таймаут 100 сек).' }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚙️ Управление подключениями",
+                    "additionalFields": {
+                      "callback_data": "=menu_connect"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "menu_main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        992,
+        496
+      ],
+      "id": "b766e0d3-7e14-4135-b5d2-4a01ceaa6be4",
+      "name": "[TG] Ошибка публикации",
+      "webhookId": "21eab895-7e4f-4799-a4c0-e08b6fceef9c",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Отправляет пользователю подтверждение и media_id"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO users (telegram_id, username, first_name, last_name, language_code)\nVALUES (\n  {{ $json.message?.from?.id || $json.callback_query?.from?.id }},\n  '{{ $json.message?.from?.username || $json.callback_query?.from?.username || \"\" }}',\n  '{{ ($json.message?.from?.first_name || $json.callback_query?.from?.first_name || \"Unknown\").replace(/'/g, \"''\") }}',\n  '{{ ($json.message?.from?.last_name || $json.callback_query?.from?.last_name || \"\").replace(/'/g, \"''\") }}',\n  '{{ $json.message?.from?.language_code || $json.callback_query?.from?.language_code || \"ru\" }}'\n)\nON CONFLICT (telegram_id) DO UPDATE \nSET username = EXCLUDED.username,\n    first_name = EXCLUDED.first_name,\n    last_name = EXCLUDED.last_name,\n    language_code = EXCLUDED.language_code,\n    updated_at = CURRENT_TIMESTAMP\nRETURNING *;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -768,
+        -32
+      ],
+      "id": "f59816ac-7a6a-423c-8bd3-2fff3a98c133",
+      "name": "[DB] Upsert User",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO connected_platforms (\n    user_id,\n    platform,\n    platform_user_id,\n    access_token,\n    scopes,\n    status\n)\nVALUES (\n    {{ $('[Auth] Webhook Instagram OAuth').item.json.query.state.split('_')[0] }},\n    'instagram',\n    '{{ $json.user_id }}',\n    '{{ $json.access_token }}',\n    '{{ JSON.stringify($json.permissions) }}'::jsonb,\n    'active'\n)\nON CONFLICT (user_id, platform, platform_user_id) DO UPDATE \nSET access_token = EXCLUDED.access_token,\n    scopes = EXCLUDED.scopes,\n    status = 'active',\n    updated_at = CURRENT_TIMESTAMP\nRETURNING id, platform, platform_user_id, status;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -384,
+        1232
+      ],
+      "id": "fc05a35b-7510-41c0-b46c-ecb84bea35b4",
+      "name": "[DB] Save Platform Token",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "[TG] Приём сообщений": {
+      "main": [
+        [
+          {
+            "node": "[DB] Upsert User",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "[Logic] Роутер событий",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Роутер событий": {
+      "main": [
+        [
+          {
+            "node": "[TG] Удалить команду пользователя",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "[TG] Экран: Главное меню",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Роутер кнопок",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Get File Path",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Роутер кнопок": {
+      "main": [
+        [
+          {
+            "node": "[TG] Экран: Хаб подключений",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Экран: Возврат в главное меню",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Экран: Онбординг Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Auth] Webhook Instagram OAuth": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Обмен code на Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Get File Path": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Init Reels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Init Reels": {
+      "main": [
+        [
+          {
+            "node": "[TG] Отправить статус",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Publish Reels": {
+      "main": [
+        [
+          {
+            "node": "[TG] Success Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Обмен code на Access Token": {
+      "main": [
+        [
+          {
+            "node": "[DB] Save Platform Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Отправить статус": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза 5 сек",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза 5 сек": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Проверить статус",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Проверить статус": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Проверка готовности Reels",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Статус: Обработка": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза 5 сек",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Проверка готовности Reels": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Publish Reels",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Ошибка публикации",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Статус: Обработка",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Upsert User": {
+      "main": [
+        []
+      ]
+    },
+    "[DB] Save Platform Token": {
+      "main": [
+        [
+          {
+            "node": "[TG] Удалить экран онбординга",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "[TG] Экран: Успех авторизации Meta",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "e72ac89f-8596-4964-ab41-6c243a6898b3",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
+  },
+  "nodeGroups": [],
+  "id": "gioPRPxokEL9rFEA",
+  "tags": []
+}
