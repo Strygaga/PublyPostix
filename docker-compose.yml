@@ -4,9 +4,9 @@ services:
     container_name: publypostix-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: publypostix
-      POSTGRES_USER: publy_admin
-      POSTGRES_PASSWORD: publy_secure_password_2026
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./docs/schema.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
@@ -22,6 +22,10 @@ services:
       - N8N_PORT=5678
       - N8N_PROTOCOL=http
       - N8N_WEBHOOK_URL=https://engross-android-underfoot.ngrok-free.dev/
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - META_CLIENT_ID=${META_CLIENT_ID}
+      - META_CLIENT_SECRET=${META_CLIENT_SECRET}
     ports:
       - "5678:5678"
     volumes:
