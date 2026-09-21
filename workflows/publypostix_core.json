@@ -508,7 +508,7 @@
       "typeVersion": 2.1,
       "position": [
         -960,
-        1488
+        1616
       ],
       "id": "ba8e8bb9-a28a-49d9-8d0b-0e261d794306",
       "name": "[Auth] Webhook Instagram OAuth",
@@ -526,7 +526,7 @@
       "typeVersion": 1.2,
       "position": [
         160,
-        1392
+        1520
       ],
       "id": "17dd1471-9b27-403a-a566-9be6a74f5948",
       "name": "[TG] Удалить экран онбординга",
@@ -557,7 +557,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -288,
+        -64,
         1152
       ],
       "id": "af49f6b3-e449-4f60-a35d-af4b1b6e7ba1",
@@ -586,8 +586,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        160,
-        1120
+        384,
+        1104
       ],
       "id": "e495905a-b34c-4c3b-ab1d-7b396a2a0318",
       "name": "[Meta] Init Reels",
@@ -615,7 +615,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1280,
+        1504,
         784
       ],
       "id": "7b298314-b31e-4b79-b67b-ea904a4d35e8",
@@ -663,7 +663,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1504,
+        1952,
         784
       ],
       "id": "572585e2-406b-4f62-939d-a015a0f17e2a",
@@ -738,7 +738,7 @@
       "typeVersion": 4.5,
       "position": [
         -736,
-        1488
+        1616
       ],
       "id": "86640a8c-902d-4f44-881e-5a305c2f8a2c",
       "name": "[Meta] Обмен code на Access Token",
@@ -786,7 +786,7 @@
       "typeVersion": 1.2,
       "position": [
         160,
-        1584
+        1712
       ],
       "id": "721ecc9a-4e95-4f9c-9131-a223b62c54c4",
       "name": "[TG] Экран: Успех авторизации Meta",
@@ -811,8 +811,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        384,
-        1120
+        608,
+        1104
       ],
       "id": "6f1a34f8-4393-42e7-9bb3-2896dca95a91",
       "name": "[TG] Отправить статус",
@@ -831,8 +831,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        608,
-        1120
+        832,
+        1104
       ],
       "id": "923cc409-a626-4d1d-9e6e-3a0d352d7039",
       "name": "[System] Пауза 5 сек",
@@ -864,7 +864,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        832,
+        1056,
         992
       ],
       "id": "97daaf05-b94d-4748-9f7f-1670eb9c1d41",
@@ -881,8 +881,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1280,
-        1168
+        1504,
+        1152
       ],
       "id": "64bd93d3-832f-492b-8401-3d8890994631",
       "name": "[TG] Статус: Обработка",
@@ -980,7 +980,7 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        1056,
+        1280,
         976
       ],
       "id": "53c2dcbd-942f-4c8e-b884-97d37cf8fe44",
@@ -1026,7 +1026,7 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1280,
+        1952,
         976
       ],
       "id": "b766e0d3-7e14-4135-b5d2-4a01ceaa6be4",
@@ -1072,7 +1072,7 @@
       "typeVersion": 2.7,
       "position": [
         -64,
-        1488
+        1616
       ],
       "id": "fc05a35b-7510-41c0-b46c-ecb84bea35b4",
       "name": "[DB] Save Platform Token",
@@ -1237,14 +1237,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT \n    cp.access_token,\n    cp.platform_user_id,\n    {{ $json.message.chat.id }}::bigint AS chat_id,\n    '{{ $json.message.video.file_id }}' AS file_id,\n    '{{ ($json.message.caption || \"\").replace(/'/g, \"''\") }}' AS caption\nFROM connected_platforms cp\nWHERE cp.user_id = {{ $json.message.from.id }}::bigint\n  AND cp.platform = 'instagram'\n  AND cp.status = 'active'\nLIMIT 1;",
+        "query": "SELECT \n    cp.id AS internal_platform_id,\n    cp.access_token,\n    cp.platform_user_id,\n    u.current_state,\n    u.draft_data,\n    {{ $json.message.chat.id }}::bigint AS chat_id,\n    '{{ $json.message.video.file_id }}' AS file_id,\n    '{{ ($json.message.caption || \"\").replace(/'/g, \"''\") }}' AS caption\nFROM users u\nLEFT JOIN connected_platforms cp \n    ON u.telegram_id = cp.user_id \n    AND cp.platform = u.draft_data->>'target_platform' \n    AND cp.status = 'active'\nWHERE u.telegram_id = {{ $json.message.from.id }}::bigint;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
         -512,
-        1120
+        1296
       ],
       "id": "35697cc2-ea5b-431a-a713-92a4cdcd95d4",
       "name": "[DB] Загрузить контекст и токен",
@@ -1264,8 +1264,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -64,
-        1120
+        160,
+        1104
       ],
       "id": "e24361da-5f21-4b9a-8e4f-2696730c1719",
       "name": "[Logic] Склейка контекста"
@@ -1296,7 +1296,7 @@
       "typeVersion": 4.5,
       "position": [
         -512,
-        1568
+        1680
       ],
       "id": "7b5d51f4-0f97-4bec-8636-2e92326f8c6d",
       "name": "[Meta] Обмен на Long-Lived Token"
@@ -1311,10 +1311,136 @@
       "typeVersion": 3.2,
       "position": [
         -288,
-        1488
+        1616
       ],
       "id": "8ffe5944-599b-4a12-9d65-3adc1e73066f",
       "name": "[Logic] Склейка токена Meta"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[Logic] Склейка контекста').item.json.chat_id }}::bigint,\n    {{ $('[Logic] Склейка контекста').item.json.internal_platform_id }},\n    '{{ $('[Logic] Склейка контекста').item.json.draft_data.target_platform }}',\n    '{{ $('[Logic] Склейка контекста').item.json.draft_data.target_format }}',\n    '{{ $('[Logic] Склейка контекста').item.json.file_id }}',\n    '{{ ($('[Logic] Склейка контекста').item.json.caption || \"\").replace(/'/g, \"''\") }}',\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1728,
+        784
+      ],
+      "id": "00e19361-5d9b-4c01-ac18-93a0598ee2bc",
+      "name": "[DB] Сохранить публикацию",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users \nSET current_state = 'IDLE',\n    draft_data = '{}'::jsonb\nWHERE telegram_id = {{ $('[Logic] Склейка контекста').item.json.chat_id }}::bigint;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2176,
+        880
+      ],
+      "id": "975a9742-8b35-4d50-838c-1c9a05db5023",
+      "name": "[DB] Сброс состояния (IDLE)",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.current_state }}",
+                    "rightValue": "WAITING_INSTAGRAM_REELS",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "2a24cd67-846c-4aed-bc04-e5b79c27ec54"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "IG Reels"
+            }
+          ]
+        },
+        "options": {
+          "fallbackOutput": "extra"
+        }
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -288,
+        1104
+      ],
+      "id": "99d54f06-965e-46ff-8cd4-b1b3bc48a7e2",
+      "name": "[Logic] Роутер медиа"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "🎬 Видео получено!\n\nВы отправили видео напрямую. Куда и в каком формате его опубликовать?",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "📸 Instagram Reels",
+                    "additionalFields": {
+                      "callback_data": "route_ig_reels"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -288,
+        1296
+      ],
+      "id": "171f82b3-94a3-4607-b5e6-466c1b07a2df",
+      "name": "[TG] Экран: Куда публикуем?",
+      "webhookId": "fb92512c-7c60-4fb7-9fbf-1ab989a4e00e",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -1441,7 +1567,7 @@
       "main": [
         [
           {
-            "node": "[TG] Success Alert",
+            "node": "[DB] Сохранить публикацию",
             "type": "main",
             "index": 0
           }
@@ -1591,12 +1717,12 @@
       "main": [
         [
           {
-            "node": "[TG] Get File Path",
+            "node": "[Logic] Роутер медиа",
             "type": "main",
             "index": 0
           },
           {
-            "node": "[Logic] Склейка контекста",
+            "node": "[TG] Экран: Куда публикуем?",
             "type": "main",
             "index": 0
           }
@@ -1635,6 +1761,55 @@
           }
         ]
       ]
+    },
+    "[DB] Сохранить публикацию": {
+      "main": [
+        [
+          {
+            "node": "[TG] Success Alert",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Success Alert": {
+      "main": [
+        [
+          {
+            "node": "[DB] Сброс состояния (IDLE)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Ошибка публикации": {
+      "main": [
+        [
+          {
+            "node": "[DB] Сброс состояния (IDLE)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Роутер медиа": {
+      "main": [
+        [
+          {
+            "node": "[TG] Get File Path",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "[Logic] Склейка контекста",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -1642,7 +1817,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "23a5acd6-b1e7-4325-bbc9-60f42d5f207d",
+  "versionId": "65d4f627-4f1c-44c8-841f-99c3c477ac62",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
