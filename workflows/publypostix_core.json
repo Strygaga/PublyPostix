@@ -15,7 +15,7 @@
       "typeVersion": 1.5,
       "position": [
         -1264,
-        64
+        160
       ],
       "id": "2aa7529a-eef8-43b6-9ef2-392264202d94",
       "name": "[TG] Приём сообщений",
@@ -164,7 +164,7 @@
       "typeVersion": 3.4,
       "position": [
         -1040,
-        144
+        240
       ],
       "id": "38ec46fb-9344-49e8-85a0-87c20c6ecbfd",
       "name": "[Logic] Роутер событий",
@@ -285,7 +285,32 @@
                 "conditions": [
                   {
                     "id": "8bb9e903-c116-42f6-883e-0a07d38fb9ea",
-                    "leftValue": "={{ $json.callback_query.data }}",
+                    "leftValue": "={{ $json.callback_query?.data }}",
+                    "rightValue": "choose_platform_ig",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Choose Platform IG"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "28e0af3e-b38f-4add-b377-dcbd31420682",
+                    "leftValue": "={{ $json.callback_query?.data }}",
                     "rightValue": "route_ig_reels",
                     "operator": {
                       "type": "string",
@@ -298,6 +323,30 @@
               },
               "renameOutput": true,
               "outputKey": "Select IG Reels"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "5f9642f4-3bac-4c59-880d-928b893caa20",
+                    "leftValue": "={{ $json.callback_query?.data }}",
+                    "rightValue": "route_ig_post",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Select IG Post"
             }
           ]
         },
@@ -307,7 +356,7 @@
       "typeVersion": 3.4,
       "position": [
         -816,
-        400
+        560
       ],
       "id": "16b73d11-4c54-457a-b5a4-13c24f280de6",
       "name": "[Logic] Роутер кнопок",
@@ -507,7 +556,7 @@
       "typeVersion": 2.1,
       "position": [
         -1264,
-        2368
+        2400
       ],
       "id": "ba8e8bb9-a28a-49d9-8d0b-0e261d794306",
       "name": "[Auth] Webhook Instagram OAuth",
@@ -525,7 +574,7 @@
       "typeVersion": 1.2,
       "position": [
         -144,
-        2272
+        2304
       ],
       "id": "17dd1471-9b27-403a-a566-9be6a74f5948",
       "name": "[TG] Удалить экран онбординга",
@@ -557,7 +606,7 @@
       "typeVersion": 4.5,
       "position": [
         -368,
-        1248
+        1504
       ],
       "id": "af49f6b3-e449-4f60-a35d-af4b1b6e7ba1",
       "name": "[TG] Get File Path",
@@ -624,7 +673,7 @@
       "typeVersion": 4.5,
       "position": [
         -1040,
-        2368
+        2400
       ],
       "id": "86640a8c-902d-4f44-881e-5a305c2f8a2c",
       "name": "[Meta] Обмен code на Access Token",
@@ -672,7 +721,7 @@
       "typeVersion": 1.2,
       "position": [
         -144,
-        2464
+        2496
       ],
       "id": "721ecc9a-4e95-4f9c-9131-a223b62c54c4",
       "name": "[TG] Экран: Успех авторизации Meta",
@@ -695,8 +744,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        -1072,
-        -80
+        -1040,
+        48
       ],
       "id": "f59816ac-7a6a-423c-8bd3-2fff3a98c133",
       "name": "[DB] Upsert User",
@@ -717,7 +766,7 @@
       "typeVersion": 2.7,
       "position": [
         -368,
-        2368
+        2400
       ],
       "id": "fc05a35b-7510-41c0-b46c-ecb84bea35b4",
       "name": "[DB] Save Platform Token",
@@ -783,9 +832,9 @@
               "row": {
                 "buttons": [
                   {
-                    "text": "=📸 Instagram Reels",
+                    "text": "=📸 Instagram",
                     "additionalFields": {
-                      "callback_data": "route_ig_reels"
+                      "callback_data": "choose_platform_ig"
                     }
                   },
                   {
@@ -820,14 +869,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE users \nSET \n    current_state = 'WAITING_INSTAGRAM_REELS',\n    draft_data = jsonb_build_object(\n        'target_platform', 'instagram',\n        'target_format', 'reels',\n        'step', 'awaiting_video'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.user_id }}::bigint\nRETURNING \n    {{ $json.chat_id }}::bigint AS chat_id,\n    {{ $json.message_id }}::bigint AS message_id;",
+        "query": "UPDATE users \nSET \n    current_state = 'WAITING_INSTAGRAM_REELS',\n    draft_data = jsonb_build_object(\n        'target_platform', 'instagram',\n        'target_format', 'reels',\n        'step', 'awaiting_video'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.callback_query.from.id }}::bigint\nRETURNING \n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        -144,
-        736
+        -592,
+        1024
       ],
       "id": "bb245e26-841e-4e2a-9b35-916d4d8379a5",
       "name": "[DB] Установить WAITING_INSTAGRAM_REELS",
@@ -866,8 +915,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        80,
-        736
+        -368,
+        1024
       ],
       "id": "e7c2281b-eb5d-4b01-991b-ef43f7547fed",
       "name": "[TG] Экран: Запрос видео Reels",
@@ -889,7 +938,7 @@
       "typeVersion": 2.7,
       "position": [
         -816,
-        1520
+        1728
       ],
       "id": "35697cc2-ea5b-431a-a713-92a4cdcd95d4",
       "name": "[DB] Загрузить контекст и токен",
@@ -910,7 +959,7 @@
       "typeVersion": 3.2,
       "position": [
         -144,
-        1168
+        1504
       ],
       "id": "e24361da-5f21-4b9a-8e4f-2696730c1719",
       "name": "[Logic] Склейка контекста"
@@ -941,7 +990,7 @@
       "typeVersion": 4.5,
       "position": [
         -816,
-        2432
+        2480
       ],
       "id": "7b5d51f4-0f97-4bec-8636-2e92326f8c6d",
       "name": "[Meta] Обмен на Long-Lived Token"
@@ -956,7 +1005,7 @@
       "typeVersion": 3.2,
       "position": [
         -592,
-        2368
+        2400
       ],
       "id": "8ffe5944-599b-4a12-9d65-3adc1e73066f",
       "name": "[Logic] Склейка токена Meta"
@@ -1075,7 +1124,7 @@
       "typeVersion": 3.4,
       "position": [
         -592,
-        1472
+        1680
       ],
       "id": "99d54f06-965e-46ff-8cd4-b1b3bc48a7e2",
       "name": "[Logic] Роутер медиа"
@@ -1093,7 +1142,7 @@
                   {
                     "text": "📸 Instagram Reels",
                     "additionalFields": {
-                      "callback_data": "route_ig_reels"
+                      "callback_data": "choose_platform_ig"
                     }
                   }
                 ]
@@ -1109,7 +1158,7 @@
       "typeVersion": 1.2,
       "position": [
         -368,
-        1632
+        1888
       ],
       "id": "171f82b3-94a3-4607-b5e6-466c1b07a2df",
       "name": "[TG] Экран: Куда публикуем?",
@@ -1150,7 +1199,7 @@
       "typeVersion": 1.2,
       "position": [
         -368,
-        1440
+        1696
       ],
       "id": "5ffe0373-06a3-4704-aeaa-b51cae27ca76",
       "name": "[TG] Ошибка формата Reels",
@@ -1174,7 +1223,7 @@
       "typeVersion": 1.2,
       "position": [
         1200,
-        1248
+        1504
       ],
       "id": "94dee3d4-53c1-4464-ada1-6663f32a49f0",
       "name": "[TG] Статус: Обработка",
@@ -1227,7 +1276,7 @@
       "typeVersion": 1.2,
       "position": [
         1648,
-        1072
+        1344
       ],
       "id": "ea9b2636-5d6c-4e2a-a827-6e634e927971",
       "name": "[TG] Ошибка публикации",
@@ -1251,7 +1300,7 @@
       "typeVersion": 2.7,
       "position": [
         1872,
-        976
+        1280
       ],
       "id": "15044ba5-c9d7-4955-9d37-219f03b39f8d",
       "name": "[DB] Сброс состояния (IDLE)",
@@ -1349,7 +1398,7 @@
       "typeVersion": 3.4,
       "position": [
         976,
-        1072
+        1344
       ],
       "id": "5f71b321-ea9a-4d5f-ac9b-4cdb50f60519",
       "name": "[Logic] Проверка готовности Reels"
@@ -1395,7 +1444,7 @@
       "typeVersion": 1.2,
       "position": [
         1648,
-        880
+        1152
       ],
       "id": "c7a5fbb7-dfa6-4f8b-88bc-fa32c599187e",
       "name": "[TG] Success Alert",
@@ -1431,7 +1480,7 @@
       "typeVersion": 4.5,
       "position": [
         1200,
-        880
+        1152
       ],
       "id": "0cfbfb3b-a267-448a-82c9-37dab3edd289",
       "name": "[Meta] Publish Reels",
@@ -1448,7 +1497,7 @@
       "typeVersion": 2.7,
       "position": [
         1424,
-        880
+        1152
       ],
       "id": "b22ef914-ba46-43a2-8b94-d8c4e129e327",
       "name": "[DB] Сохранить публикацию",
@@ -1481,7 +1530,7 @@
       "typeVersion": 4.5,
       "position": [
         80,
-        1168
+        1504
       ],
       "id": "1cccf918-1e51-4ffa-92b8-9f17fe9c88d5",
       "name": "[Meta] Init Reels",
@@ -1500,7 +1549,7 @@
       "typeVersion": 1.2,
       "position": [
         304,
-        1168
+        1504
       ],
       "id": "8cb26229-9a29-428a-85bd-35ea11a6367d",
       "name": "[TG] Отправить статус",
@@ -1520,7 +1569,7 @@
       "typeVersion": 1.1,
       "position": [
         528,
-        1168
+        1504
       ],
       "id": "f9a2b578-d601-44ec-a789-d24b0bba8d22",
       "name": "[System] Пауза 5 сек",
@@ -1553,7 +1602,7 @@
       "typeVersion": 4.5,
       "position": [
         752,
-        1088
+        1360
       ],
       "id": "2efd820e-ab0c-441e-8d26-5266209b863e",
       "name": "[Meta] Проверить статус"
@@ -1587,7 +1636,7 @@
       "typeVersion": 1.2,
       "position": [
         -368,
-        1824
+        2080
       ],
       "id": "4b404ba0-1550-406b-9bdf-c8de442c8c9c",
       "name": "[TG] Подсказка (IDLE)",
@@ -1689,11 +1738,138 @@
       "typeVersion": 1.2,
       "position": [
         -144,
-        928
+        1008
       ],
       "id": "a24bf41a-4702-43bb-9452-117979e0dbe0",
       "name": "[TG] Экран: Требуется привязка IG",
       "webhookId": "c3413f97-e679-4aec-8149-f7ae1eae06ab",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.chat_id }}",
+        "messageId": "={{ $json.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "📸 Instagram: выбор формата публикации\n\nКакой материал планируем опубликовать в профиль?",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🎬 Reels (Видео до 60 сек)",
+                    "additionalFields": {
+                      "callback_data": "route_ig_reels"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🖼 Пост в ленту (Фото / Видео)",
+                    "additionalFields": {
+                      "callback_data": "route_ig_post"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "◀️ Назад к выбору площадки",
+                    "additionalFields": {
+                      "callback_data": "menu_create_post"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        736
+      ],
+      "id": "5f46b76c-7728-4dc7-8e10-0c2ee8bd0d5c",
+      "name": "[TG] Экран: Форматы Instagram",
+      "webhookId": "5d6668d7-286d-46da-af75-24cd978af2e4",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users \nSET \n    current_state = 'WAITING_INSTAGRAM_POST',\n    draft_data = jsonb_build_object(\n        'target_platform', 'instagram',\n        'target_format', 'feed_post',\n        'allowed_types', jsonb_build_array('photo', 'video'),\n        'step', 'awaiting_media'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.callback_query.from.id }}::bigint\nRETURNING \n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -592,
+        1216
+      ],
+      "id": "fe09d2d8-dffa-42b4-83d6-f9fea6ce2ae4",
+      "name": "[DB] Установить WAITING_INSTAGRAM_POST",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.chat_id }}",
+        "messageId": "={{ $json.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "🖼 Публикация поста в Instagram\n\nОтправьте одно фото или видеоролик прямо в этот диалог.\n\n💡 Текст описания и хэштеги можно прикрепить прямо в подпись (caption) к файлу (или отправить без текста).",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "❌ Отмена",
+                    "additionalFields": {
+                      "callback_data": "menu_main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -368,
+        1216
+      ],
+      "id": "82e40ac2-8257-4a66-b333-4485ba74c08b",
+      "name": "[TG] Экран: Запрос медиа для поста",
+      "webhookId": "859e99c5-7c4e-4572-8023-c0d069fc0a86",
       "credentials": {
         "telegramApi": {
           "id": "sLY97LbuJGe6Ytey",
@@ -1783,6 +1959,20 @@
         [
           {
             "node": "[DB] Guard: Проверить токен IG",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[DB] Установить WAITING_INSTAGRAM_REELS",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[DB] Установить WAITING_INSTAGRAM_POST",
             "type": "main",
             "index": 0
           }
@@ -2102,7 +2292,7 @@
       "main": [
         [
           {
-            "node": "[DB] Установить WAITING_INSTAGRAM_REELS",
+            "node": "[TG] Экран: Форматы Instagram",
             "type": "main",
             "index": 0
           }
@@ -2115,6 +2305,17 @@
           }
         ]
       ]
+    },
+    "[DB] Установить WAITING_INSTAGRAM_POST": {
+      "main": [
+        [
+          {
+            "node": "[TG] Экран: Запрос медиа для поста",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -2122,7 +2323,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "0597d3e3-c6b4-4bc2-8066-7022c8d2a063",
+  "versionId": "d1a497bd-030c-441b-8741-8bb7d7614b68",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
