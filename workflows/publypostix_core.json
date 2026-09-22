@@ -478,8 +478,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -864,
-        2608
+        -896,
+        3200
       ],
       "id": "ba8e8bb9-a28a-49d9-8d0b-0e261d794306",
       "name": "[Auth] Webhook Instagram OAuth",
@@ -496,8 +496,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        256,
-        2512
+        224,
+        3104
       ],
       "id": "17dd1471-9b27-403a-a566-9be6a74f5948",
       "name": "[TG] Удалить экран онбординга",
@@ -595,8 +595,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -640,
-        2608
+        -672,
+        3200
       ],
       "id": "86640a8c-902d-4f44-881e-5a305c2f8a2c",
       "name": "[Meta] Обмен code на Access Token",
@@ -643,8 +643,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        256,
-        2704
+        224,
+        3296
       ],
       "id": "721ecc9a-4e95-4f9c-9131-a223b62c54c4",
       "name": "[TG] Экран: Успех авторизации Meta",
@@ -688,8 +688,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        32,
-        2608
+        0,
+        3200
       ],
       "id": "fc05a35b-7510-41c0-b46c-ecb84bea35b4",
       "name": "[DB] Save Platform Token",
@@ -817,8 +817,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        528,
-        752
+        576,
+        672
       ],
       "id": "e7c2281b-eb5d-4b01-991b-ef43f7547fed",
       "name": "[TG] Экран: Запрос видео Reels",
@@ -876,8 +876,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -416,
-        2688
+        -448,
+        3280
       ],
       "id": "7b5d51f4-0f97-4bec-8636-2e92326f8c6d",
       "name": "[Meta] Обмен на Long-Lived Token"
@@ -891,8 +891,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -192,
-        2608
+        -224,
+        3200
       ],
       "id": "8ffe5944-599b-4a12-9d65-3adc1e73066f",
       "name": "[Logic] Склейка токена Meta"
@@ -1603,6 +1603,18 @@
               "row": {
                 "buttons": [
                   {
+                    "text": "🎞 Карусель (до 10 фото/видео)",
+                    "additionalFields": {
+                      "callback_data": "format:instagram:carousel"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
                     "text": "◀️ Назад к выбору площадки",
                     "additionalFields": {
                       "callback_data": "nav:create_post"
@@ -1659,8 +1671,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        528,
-        976
+        576,
+        848
       ],
       "id": "82e40ac2-8257-4a66-b333-4485ba74c08b",
       "name": "[TG] Экран: Запрос медиа для поста",
@@ -1765,6 +1777,31 @@
               },
               "renameOutput": true,
               "outputKey": "Instagram Feed Post"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e171b226-cff8-47a4-96cd-852defb623a9",
+                    "leftValue": "={{ $json.draft_data?.target_format }}",
+                    "rightValue": "carousel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram Carousel"
             }
           ]
         },
@@ -1796,8 +1833,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        816,
-        2192
+        176,
+        2272
       ],
       "id": "393e15c2-747b-46fc-8760-20468d4f2f72",
       "name": "[TG] Get File Path (Post)"
@@ -1823,8 +1860,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1040,
-        2192
+        400,
+        2272
       ],
       "id": "852c59b2-29b9-4173-b5bf-17e6cb7b55a1",
       "name": "[Meta] Init Photo Post"
@@ -1850,8 +1887,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1488,
-        2192
+        848,
+        2272
       ],
       "id": "c5188656-e0ae-459c-9d77-c2998da93fd3",
       "name": "[Meta] Publish Photo Post",
@@ -1867,8 +1904,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1712,
-        2192
+        1072,
+        2272
       ],
       "id": "27cfcbde-74c0-46d2-af64-5a9cd3e3365f",
       "name": "[DB] Сохранить публикацию (Post)",
@@ -1907,8 +1944,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1936,
-        2192
+        1296,
+        2272
       ],
       "id": "f8fcc00f-aecf-4075-ad2c-6433ac66161a",
       "name": "[TG] Success Alert (Post)",
@@ -1925,8 +1962,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1264,
-        2192
+        624,
+        2272
       ],
       "id": "3539a367-f28d-475d-a2a7-b90d6ee8be8a",
       "name": "[System] Пауза",
@@ -2081,7 +2118,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE users \nSET \n    current_state = 'WAITING_' || UPPER('{{ $json.callback_query.data.split(':')[1] }}') || '_' || UPPER('{{ $json.callback_query.data.split(':')[2] }}'),\n    draft_data = jsonb_build_object(\n        'target_platform', '{{ $json.callback_query.data.split(':')[1] }}',\n        'target_format', '{{ $json.callback_query.data.split(':')[2] }}',\n        'allowed_types', CASE \n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'reels' THEN jsonb_build_array('video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'feed_post' THEN jsonb_build_array('photo', 'video')\n            ELSE jsonb_build_array('photo', 'video', 'text')\n        END,\n        'step', 'awaiting_media'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.callback_query.from.id }}::bigint\nRETURNING \n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id,\n    '{{ $json.callback_query.data.split(':')[1] }}' AS target_platform,\n    '{{ $json.callback_query.data.split(':')[2] }}' AS target_format;",
+        "query": "UPDATE users \nSET \n    current_state = 'WAITING_' || UPPER('{{ $json.callback_query.data.split(':')[1] }}') || '_' || UPPER('{{ $json.callback_query.data.split(':')[2] }}'),\n    draft_data = jsonb_build_object(\n        'target_platform', '{{ $json.callback_query.data.split(':')[1] }}',\n        'target_format', '{{ $json.callback_query.data.split(':')[2] }}',\n        'allowed_types', CASE \n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'reels' THEN jsonb_build_array('video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'feed_post' THEN jsonb_build_array('photo', 'video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'carousel' THEN jsonb_build_array('photo', 'video', 'text')\n            ELSE jsonb_build_array('photo', 'video', 'text')\n        END,\n        'items', '[]'::jsonb,\n        'caption', '',\n        'dashboard_message_id', {{ $json.callback_query.message.message_id }}::bigint,\n        'step', 'collecting_items'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.callback_query.from.id }}::bigint\nRETURNING \n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id,\n    '{{ $json.callback_query.data.split(':')[1] }}' AS target_platform,\n    '{{ $json.callback_query.data.split(':')[2] }}' AS target_format;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -2151,6 +2188,31 @@
               },
               "renameOutput": true,
               "outputKey": "Post Prompt"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "b44e9701-260b-432b-a596-8c287e514b3e",
+                    "leftValue": "={{ $json.target_format }}",
+                    "rightValue": "carousel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Carousel Prompt"
             }
           ]
         },
@@ -2164,6 +2226,165 @@
       ],
       "id": "8a0fd547-964b-453f-a2d5-0c4c81a3d5fd",
       "name": "[Logic] Роутер экранов запроса"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.chat_id }}",
+        "messageId": "={{ $json.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "🎞 Публикация карусели в Instagram\n\nОтправьте первый слайд (фотографию или видеоролик) в этот диалог.\nВсего можно добавить от 2 до 10 файлов.\n\n💡 Текст описания можно прикрепить к любому из файлов или прислать отдельным сообщением позже.",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "❌ Отмена",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        576,
+        1040
+      ],
+      "id": "883f0a2a-7921-40ac-92c4-7d3dd165d14d",
+      "name": "[TG] Экран: Запрос файлов карусели",
+      "webhookId": "fb1d15b6-7b15-4286-a9a2-d14c29958a09",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET draft_data = jsonb_set(\n    jsonb_set(\n        draft_data,\n        '{items}',\n        CASE \n            WHEN '{{ $json.incoming_type }}' IN ('photo', 'video') \n                 AND jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) < 10\n            THEN COALESCE(draft_data->'items', '[]'::jsonb) || jsonb_build_object(\n                'index', jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) + 1,\n                'type', '{{ $json.incoming_type }}',\n                'file_id', '{{ $json.file_id }}'\n            )::jsonb\n            ELSE COALESCE(draft_data->'items', '[]'::jsonb)\n        END\n    ),\n    '{caption}',\n    CASE \n        WHEN '{{ ($json.caption || \"\").replace(/'/g, \"''\") }}' <> '' \n        THEN to_jsonb('{{ ($json.caption || \"\").replace(/'/g, \"''\") }}'::text)\n        ELSE COALESCE(draft_data->'caption', '\"\"'::jsonb)\n    END\n),\nupdated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.chat_id }}::bigint\nRETURNING \n    telegram_id AS chat_id,\n    draft_data,\n    (draft_data->>'dashboard_message_id')::bigint AS old_dashboard_id,\n    jsonb_array_length(draft_data->'items') AS items_count,\n    draft_data->>'caption' AS current_caption;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        176,
+        2576
+      ],
+      "id": "3e00ef21-d2c8-4e2d-8d22-532e313399fd",
+      "name": "[DB] Накопить элемент карусели",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[DB] Накопить элемент карусели').item.json.chat_id }}",
+        "text": "=🎞 Сборка карусели Instagram ({{ $('[DB] Накопить элемент карусели').item.json.items_count }}/10)\n\nСостав публикации:\n{{ ($('[DB] Накопить элемент карусели').item.json.draft_data?.items || []).map((item, idx) => `${idx + 1}. ${item.type === 'photo' ? 'Фотография 🖼' : 'Видеоролик 🎬'}`).join('\\n') }}\n\n📝 Описание: {{ $('[DB] Накопить элемент карусели').item.json.current_caption ? `«${$('[DB] Накопить элемент карусели').item.json.current_caption}»` : 'отсутствует (будет опубликовано без текста)' }}\n\n{{ $('[DB] Накопить элемент карусели').item.json.items_count < 2 ? '⚠️ Для публикации карусели добавьте ещё минимум 1 файл.' : '✅ Карусель готова к публикации!' }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "=🚀 Опубликовать карусель ({{ $('[DB] Накопить элемент карусели').item.json.items_count }}/10)",
+                    "additionalFields": {
+                      "callback_data": "publish:instagram:carousel"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "❌ Отменить публикацию",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        496,
+        2576
+      ],
+      "id": "f46c781e-caed-45bd-b23e-b8a0192fa43b",
+      "name": "[TG] Экран: Сборка карусели",
+      "webhookId": "8d360020-bb3c-4974-b30f-80cd985eca4e",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $json.chat_id }}",
+        "messageId": "={{ $json.old_dashboard_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        352,
+        2576
+      ],
+      "id": "4b83b7c4-92dd-4678-9b61-cc8d90becd98",
+      "name": "[TG] Удалить предыдущую карточку",
+      "webhookId": "abbda5a7-3f50-4820-9ed2-abecfdbc59ee",
+      "retryOnFail": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users\nSET draft_data = jsonb_set(\n    draft_data,\n    '{dashboard_message_id}',\n    to_jsonb({{ $json.message_id || $json.result.message_id }}::bigint)\n),\nupdated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $('[DB] Накопить элемент карусели').item.json.chat_id }}::bigint;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        656,
+        2576
+      ],
+      "id": "c29e627d-b203-436a-a8ee-10f2acda8e35",
+      "name": "[DB] Зафиксировать message_id карточки",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -2532,6 +2753,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "[DB] Накопить элемент карусели",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -2681,6 +2909,46 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "[TG] Экран: Запрос файлов карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Накопить элемент карусели": {
+      "main": [
+        [
+          {
+            "node": "[TG] Удалить предыдущую карточку",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Удалить предыдущую карточку": {
+      "main": [
+        [
+          {
+            "node": "[TG] Экран: Сборка карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Экран: Сборка карусели": {
+      "main": [
+        [
+          {
+            "node": "[DB] Зафиксировать message_id карточки",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     }
@@ -2690,7 +2958,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "e76b4844-f930-4bae-a2ff-97e8ef3352e4",
+  "versionId": "187b81eb-7722-4d8a-9dc7-7ffea88a2593",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
