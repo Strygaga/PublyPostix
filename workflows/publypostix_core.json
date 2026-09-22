@@ -1123,66 +1123,6 @@
     },
     {
       "parameters": {
-        "operation": "executeQuery",
-        "query": "SELECT \n    current_state,\n    draft_data,\n    {{ $json.message.chat.id }}::bigint AS chat_id,\n    {{ $json.message.message_id }}::bigint AS message_id\nFROM users \nWHERE telegram_id = {{ $json.message.from.id }}::bigint;",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.postgres",
-      "typeVersion": 2.7,
-      "position": [
-        -1264,
-        2048
-      ],
-      "id": "2c2eb5de-1bae-4327-9e7b-0d69902da620",
-      "name": "[DB] Проверить FSM (Валидация)",
-      "credentials": {
-        "postgres": {
-          "id": "BPj3YUFvNFsoTLCo",
-          "name": "Postgres account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.current_state }}",
-                    "rightValue": "",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "dafe6f4d-e184-4230-95df-09fa8fc86761"
-                  }
-                ],
-                "combinator": "and"
-              }
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        -1040,
-        2048
-      ],
-      "id": "3ecce04b-4747-47ec-9f70-7bb9618dfae1",
-      "name": "[Logic] Роутер некорректного ввода"
-    },
-    {
-      "parameters": {
         "chatId": "={{ $json.chat_id }}",
         "text": "=⚠️ Неподдерживаемый формат для Instagram Reels!\n\nВы отправили: {{ $json.incoming_type === 'photo' ? 'фотографию 🖼' : 'текстовое сообщение ✍️' }}.\nДля публикации Reels требуется вертикальное видео (MP4 до 60 сек).\n\nПожалуйста, отправьте видеофайл или отмените операцию:",
         "replyMarkup": "inlineKeyboard",
@@ -1225,7 +1165,7 @@
     {
       "parameters": {
         "operation": "editMessageText",
-        "chatId": "={{ $('Start').item.json.chat_id }}",
+        "chatId": "={{ $('[Logic] Склейка контекста').item.json.chat_id }}",
         "messageId": "={{ $('[TG] Отправить статус').item.json.message_id || $('[TG] Отправить статус').item.json.result.message_id }}",
         "text": "=⚙️ Идёт кодирование Reels на серверах Meta...\nПожалуйста, подождите {{ ['⏳', '⌛', '🔄', '⚙️'][$runIndex % 4] }} (проверка {{ $runIndex + 1 }})",
         "additionalFields": {}
@@ -1248,7 +1188,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $('Start').item.json.chat_id }}",
+        "chatId": "={{ $('[Logic] Склейка контекста').item.json.chat_id }}",
         "text": "=❌ Не удалось опубликовать Reels в Instagram.\n\nПричина: {{ $json.status_code === 'ERROR' ? 'Серверы Meta отклонили видеофайл (проверьте формат).' : 'Превышено время ожидания обработки (таймаут 100 сек).' }}",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
@@ -1417,7 +1357,7 @@
     {
       "parameters": {
         "operation": "editMessageText",
-        "chatId": "={{ $('Start').item.json.chat_id }}",
+        "chatId": "={{ $('[Logic] Склейка контекста').item.json.chat_id }}",
         "messageId": "={{ $('[TG] Отправить статус').item.json.message_id || $('[TG] Отправить статус').item.json.result.message_id }}",
         "replyMarkup": "inlineKeyboard",
         "text": "=🎉 Reels успешно опубликован в Instagram!\n\n🆔 ID публикации: {{ $('[Meta] Publish Reels').item.json.id }}",
@@ -1472,13 +1412,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $('Start').item.json.platform_user_id }}/media_publish",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Logic] Склейка контекста').item.json.platform_user_id }}/media_publish",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $('Start').item.json.access_token }}"
+              "value": "=Bearer {{ $('[Logic] Склейка контекста').item.json.access_token }}"
             }
           ]
         },
@@ -1522,19 +1462,19 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $('Start').item.json.platform_user_id }}/media",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Logic] Склейка контекста').item.json.platform_user_id }}/media",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $('Start').item.json.access_token }}"
+              "value": "=Bearer {{ $('[Logic] Склейка контекста').item.json.access_token }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n  {\n    \"media_type\": \"REELS\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result_file_path,\n    \"caption\": $json.caption\n  }\n}}",
+        "jsonBody": "={{\n  {\n    \"media_type\": \"REELS\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path,\n    \"caption\": $json.caption\n  }\n}}",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
@@ -1550,7 +1490,7 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $('Start').item.json.chat_id }}",
+        "chatId": "={{ $('[Logic] Склейка контекста').item.json.chat_id }}",
         "text": "⏳ Видео получено и отправлено в Meta.\nНачинаем транскодирование Reels...",
         "additionalFields": {
           "appendAttribution": false
@@ -1603,7 +1543,7 @@
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $('Start').item.json.access_token }}"
+              "value": "=Bearer {{ $('[Logic] Склейка контекста').item.json.access_token }}"
             }
           ]
         },
@@ -1752,7 +1692,7 @@
         928
       ],
       "id": "a24bf41a-4702-43bb-9452-117979e0dbe0",
-      "name": "Edit a text message",
+      "name": "[TG] Экран: Требуется привязка IG",
       "webhookId": "c3413f97-e679-4aec-8149-f7ae1eae06ab",
       "credentials": {
         "telegramApi": {
@@ -2023,17 +1963,6 @@
         ]
       ]
     },
-    "[DB] Проверить FSM (Валидация)": {
-      "main": [
-        [
-          {
-            "node": "[Logic] Роутер некорректного ввода",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "[TG] Статус: Обработка": {
       "main": [
         [
@@ -2180,7 +2109,7 @@
         ],
         [
           {
-            "node": "Edit a text message",
+            "node": "[TG] Экран: Требуется привязка IG",
             "type": "main",
             "index": 0
           }
@@ -2193,7 +2122,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "2341c8b8-7648-4cb3-a3e8-0882cb63d611",
+  "versionId": "0597d3e3-c6b4-4bc2-8066-7022c8d2a063",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
