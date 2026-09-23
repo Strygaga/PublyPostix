@@ -270,6 +270,30 @@
               },
               "renameOutput": true,
               "outputKey": "Account Connection"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c965216f-f58e-41d8-95de-336a47dd37a9",
+                    "leftValue": "={{ $json.callback_query?.data }}",
+                    "rightValue": "publish:",
+                    "operator": {
+                      "type": "string",
+                      "operation": "startsWith"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Publish Action"
             }
           ]
         },
@@ -453,8 +477,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -32,
-        1120
+        224,
+        960
       ],
       "id": "f689b175-e790-4ae4-bfdc-d3c9cb81fdff",
       "name": "[TG] Экран: Онбординг Instagram",
@@ -528,8 +552,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        144,
-        1904
+        432,
+        1872
       ],
       "id": "af49f6b3-e449-4f60-a35d-af4b1b6e7ba1",
       "name": "[TG] Get File Path",
@@ -817,8 +841,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        576,
-        672
+        640,
+        544
       ],
       "id": "e7c2281b-eb5d-4b01-991b-ef43f7547fed",
       "name": "[TG] Экран: Запрос видео Reels",
@@ -1091,8 +1115,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1488,
-        1984
+        1776,
+        1952
       ],
       "id": "94dee3d4-53c1-4464-ada1-6663f32a49f0",
       "name": "[TG] Статус: Обработка",
@@ -1106,8 +1130,8 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
-        "text": "=❌ Не удалось опубликовать Reels в Instagram.\n\nПричина: {{ $json.status_code === 'ERROR' ? 'Серверы Meta отклонили видеофайл (проверьте формат).' : 'Превышено время ожидания обработки (таймаут 100 сек).' }}",
+        "chatId": "={{\n  $('[DB] Загрузить черновик карусели').isExecuted\n    ? $('[DB] Загрузить черновик карусели').item.json.chat_id\n    : $('[DB] Загрузить контекст и токен').item.json.chat_id\n}}",
+        "text": "={{\n  (() => {\n    // 1. Извлекаем контекст из активного якорного узла\n    const ctx = $('[DB] Загрузить черновик карусели').isExecuted\n      ? $('[DB] Загрузить черновик карусели').item.json\n      : $('[DB] Загрузить контекст и токен').item.json;\n\n    // 2. Словари нормализации названий\n    const platformNames = {\n      instagram: 'Instagram',\n      vk: 'ВКонтакте',\n      youtube: 'YouTube',\n      telegram: 'Telegram'\n    };\n\n    const formatNames = {\n      reels: 'Reels',\n      feed_post: 'поста в ленту',\n      carousel: 'карусели',\n      shorts: 'Shorts'\n    };\n\n    const targetPlatform = ctx?.draft_data?.target_platform;\n    const targetFormat = ctx?.draft_data?.target_format;\n\n    const platform = platformNames[targetPlatform] || 'соцсеть';\n    const format = formatNames[targetFormat] || 'материала';\n\n    // 3. Определение причины сбоя\n    let reason = 'Произошла непредвиденная ошибка на стороне сервиса.';\n    \n    if ($json.status_code === 'ERROR') {\n      reason = 'Серверы площадки отклонили медиафайл (проверьте формат, пропорции или размер).';\n    } else if ($json.status_code === 'IN_PROGRESS') {\n      reason = 'Превышено время ожидания обработки на серверах площадки (таймаут кодирования).';\n    } else if ($json.error?.message) {\n      reason = $json.error.message;\n    } else if ($json.errorMessage) {\n      reason = $json.errorMessage;\n    }\n\n    return `❌ Не удалось опубликовать ${format} в ${platform}.\\n\\nПричина: ${reason}`;\n  })()\n}}",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [
@@ -1144,8 +1168,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1936,
-        1808
+        2224,
+        1776
       ],
       "id": "ea9b2636-5d6c-4e2a-a827-6e634e927971",
       "name": "[TG] Ошибка публикации",
@@ -1162,14 +1186,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE users \nSET current_state = 'IDLE',\n    draft_data = '{}'::jsonb\nWHERE telegram_id = {{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}::bigint;",
+        "query": "UPDATE users \nSET current_state = 'IDLE',\n    draft_data = '{}'::jsonb,\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.chat?.id || $json.result?.chat?.id }}::bigint;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        2160,
-        1904
+        2672,
+        1824
       ],
       "id": "15044ba5-c9d7-4955-9d37-219f03b39f8d",
       "name": "[DB] Сброс состояния (IDLE)",
@@ -1266,8 +1290,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        1264,
-        1808
+        1552,
+        1776
       ],
       "id": "5f71b321-ea9a-4d5f-ac9b-4cdb50f60519",
       "name": "[Logic] Проверка готовности Reels"
@@ -1312,8 +1336,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1936,
-        1616
+        2224,
+        1584
       ],
       "id": "c7a5fbb7-dfa6-4f8b-88bc-fa32c599187e",
       "name": "[TG] Success Alert",
@@ -1348,8 +1372,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1488,
-        1616
+        1776,
+        1584
       ],
       "id": "0cfbfb3b-a267-448a-82c9-37dab3edd289",
       "name": "[Meta] Publish Reels",
@@ -1367,8 +1391,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1712,
-        1616
+        2000,
+        1584
       ],
       "id": "b22ef914-ba46-43a2-8b94-d8c4e129e327",
       "name": "[DB] Сохранить публикацию",
@@ -1400,8 +1424,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        368,
-        1904
+        656,
+        1872
       ],
       "id": "1cccf918-1e51-4ffa-92b8-9f17fe9c88d5",
       "name": "[Meta] Init Reels",
@@ -1419,8 +1443,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        592,
-        1904
+        880,
+        1872
       ],
       "id": "8cb26229-9a29-428a-85bd-35ea11a6367d",
       "name": "[TG] Отправить статус",
@@ -1439,8 +1463,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        816,
-        1904
+        1104,
+        1872
       ],
       "id": "f9a2b578-d601-44ec-a789-d24b0bba8d22",
       "name": "[System] Пауза 5 сек",
@@ -1472,8 +1496,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1040,
-        1824
+        1328,
+        1840
       ],
       "id": "2efd820e-ab0c-441e-8d26-5266209b863e",
       "name": "[Meta] Проверить статус"
@@ -1553,8 +1577,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        576,
-        464
+        640,
+        320
       ],
       "id": "a24bf41a-4702-43bb-9452-117979e0dbe0",
       "name": "[TG] Экран: Требуется привязка IG",
@@ -1630,8 +1654,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        608,
-        256
+        672,
+        112
       ],
       "id": "5f46b76c-7728-4dc7-8e10-0c2ee8bd0d5c",
       "name": "[TG] Экран: Форматы Instagram",
@@ -1671,8 +1695,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        576,
-        848
+        640,
+        720
       ],
       "id": "82e40ac2-8257-4a66-b333-4485ba74c08b",
       "name": "[TG] Экран: Запрос медиа для поста",
@@ -1727,97 +1751,6 @@
     },
     {
       "parameters": {
-        "rules": {
-          "values": [
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "leftValue": "={{ $json.draft_data?.target_format }}",
-                    "rightValue": "reels",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals"
-                    },
-                    "id": "37281c85-566b-4619-bbfa-6a2d7ed7c810"
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Instagram Reels"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "a84eb17a-6a65-4c6d-b23d-6b703e99f10b",
-                    "leftValue": "={{ $json.draft_data?.target_format }}",
-                    "rightValue": "feed_post",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Instagram Feed Post"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "e171b226-cff8-47a4-96cd-852defb623a9",
-                    "leftValue": "={{ $json.draft_data?.target_format }}",
-                    "rightValue": "carousel",
-                    "operator": {
-                      "type": "string",
-                      "operation": "equals",
-                      "name": "filter.operator.equals"
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Instagram Carousel"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.switch",
-      "typeVersion": 3.4,
-      "position": [
-        -80,
-        2000
-      ],
-      "id": "aa856334-67cc-433a-80b7-ae3a4176128f",
-      "name": "[Logic] Диспетчер форматов"
-    },
-    {
-      "parameters": {
         "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile",
         "sendQuery": true,
         "queryParameters": {
@@ -1833,8 +1766,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        176,
-        2272
+        464,
+        2240
       ],
       "id": "393e15c2-747b-46fc-8760-20468d4f2f72",
       "name": "[TG] Get File Path (Post)"
@@ -1860,8 +1793,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        400,
-        2272
+        688,
+        2240
       ],
       "id": "852c59b2-29b9-4173-b5bf-17e6cb7b55a1",
       "name": "[Meta] Init Photo Post"
@@ -1887,8 +1820,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        848,
-        2272
+        1136,
+        2240
       ],
       "id": "c5188656-e0ae-459c-9d77-c2998da93fd3",
       "name": "[Meta] Publish Photo Post",
@@ -1904,8 +1837,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1072,
-        2272
+        1360,
+        2240
       ],
       "id": "27cfcbde-74c0-46d2-af64-5a9cd3e3365f",
       "name": "[DB] Сохранить публикацию (Post)",
@@ -1944,8 +1877,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1296,
-        2272
+        1584,
+        2240
       ],
       "id": "f8fcc00f-aecf-4075-ad2c-6433ac66161a",
       "name": "[TG] Success Alert (Post)",
@@ -1962,8 +1895,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        624,
-        2272
+        912,
+        2240
       ],
       "id": "3539a367-f28d-475d-a2a7-b90d6ee8be8a",
       "name": "[System] Пауза",
@@ -2069,8 +2002,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        128,
-        368
+        192,
+        224
       ],
       "id": "427436db-0ebd-4a60-b1a0-d47e07359f7f",
       "name": "[DB] Guard: Проверить подключение платформы",
@@ -2109,8 +2042,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        352,
-        368
+        416,
+        224
       ],
       "id": "16fc9fde-ac13-403e-9d9d-bc34460bb437",
       "name": "[Logic] Guard: Платформа активна?"
@@ -2124,8 +2057,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        80,
-        848
+        192,
+        640
       ],
       "id": "936be023-cd88-473a-853e-c025783847eb",
       "name": "[DB] Установить WAITING (Универсальный)",
@@ -2221,8 +2154,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        304,
-        848
+        416,
+        640
       ],
       "id": "8a0fd547-964b-453f-a2d5-0c4c81a3d5fd",
       "name": "[Logic] Роутер экранов запроса"
@@ -2255,8 +2188,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        576,
-        1040
+        640,
+        912
       ],
       "id": "883f0a2a-7921-40ac-92c4-7d3dd165d14d",
       "name": "[TG] Экран: Запрос файлов карусели",
@@ -2277,8 +2210,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        176,
-        2576
+        464,
+        2544
       ],
       "id": "3e00ef21-d2c8-4e2d-8d22-532e313399fd",
       "name": "[DB] Накопить элемент карусели",
@@ -2329,8 +2262,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        496,
-        2576
+        784,
+        2544
       ],
       "id": "f46c781e-caed-45bd-b23e-b8a0192fa43b",
       "name": "[TG] Экран: Сборка карусели",
@@ -2351,8 +2284,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        352,
-        2576
+        640,
+        2544
       ],
       "id": "4b83b7c4-92dd-4678-9b61-cc8d90becd98",
       "name": "[TG] Удалить предыдущую карточку",
@@ -2374,8 +2307,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        656,
-        2576
+        944,
+        2544
       ],
       "id": "c29e627d-b203-436a-a8ee-10f2acda8e35",
       "name": "[DB] Зафиксировать message_id карточки",
@@ -2385,6 +2318,538 @@
           "name": "Postgres account"
         }
       }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.draft_data?.target_platform }}",
+                    "rightValue": "instagram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "50db7d79-6ffa-4cc2-b22d-a42c8dc2a686"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        -64,
+        2112
+      ],
+      "id": "187bb2f9-b5b1-456c-9a43-9ab7fbcb68bc",
+      "name": "[Logic] Диспетчер платформ"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.draft_data?.target_format }}",
+                    "rightValue": "reels",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "37281c85-566b-4619-bbfa-6a2d7ed7c810"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram Reels"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "a84eb17a-6a65-4c6d-b23d-6b703e99f10b",
+                    "leftValue": "={{ $json.draft_data?.target_format }}",
+                    "rightValue": "feed_post",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram Feed Post"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e171b226-cff8-47a4-96cd-852defb623a9",
+                    "leftValue": "={{ $json.draft_data?.target_format }}",
+                    "rightValue": "carousel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram Carousel"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        208,
+        1968
+      ],
+      "id": "aa856334-67cc-433a-80b7-ae3a4176128f",
+      "name": "[Logic] Диспетчер форматов (Instagram)"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    cp.id AS internal_platform_id,\n    cp.access_token,\n    cp.platform_user_id,\n    u.draft_data,\n    u.current_state,\n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id,\n    jsonb_array_length(COALESCE(u.draft_data->'items', '[]'::jsonb)) AS items_count\nFROM users u\nJOIN connected_platforms cp \n    ON u.telegram_id = cp.user_id \n   AND cp.platform = 'instagram' \n   AND cp.status = 'active'\nWHERE u.telegram_id = {{ $json.callback_query.from.id }}::bigint;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        224,
+        1152
+      ],
+      "id": "a1a42705-63b3-4d63-b884-bc89989251b5",
+      "name": "[DB] Загрузить черновик карусели",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "51a304d1-1745-4a89-bbe6-05c1f03a72b0",
+              "leftValue": "={{ $json.items_count }}",
+              "rightValue": 2,
+              "operator": {
+                "type": "number",
+                "operation": "gte"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        416,
+        1152
+      ],
+      "id": "fc8ace11-3d40-4543-8cb5-686a6fac69d5",
+      "name": "[Logic] Guard: Карусель готова?"
+    },
+    {
+      "parameters": {
+        "jsCode": "// Забираем единственный входной элемент текущей сессии через массив\nconst inputItems = $input.all();\nif (!inputItems.length) return [];\n\nconst item = inputItems[0].json;\nconst slides = item.draft_data?.items || [];\n\nreturn slides.map((slide, index) => ({\n  json: {\n    file_id: slide.file_id,\n    type: slide.type,\n    slide_index: index + 1,\n    total_slides: slides.length\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        640,
+        1120
+      ],
+      "id": "9b84a6f5-9393-4364-a390-de2433f24b46",
+      "name": "[Logic] Развернуть слайды"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $json.file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        816,
+        1120
+      ],
+      "id": "bc0ed7e1-93c8-4bdf-a542-9377d522f251",
+      "name": "[TG] Get File Path (Slide)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить черновик карусели').item.json.platform_user_id }}/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  $('[Logic] Развернуть слайды').item.json.type === 'video' ? {\n    \"media_type\": \"VIDEO\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path,\n    \"is_carousel_item\": true\n  } : {\n    \"image_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path,\n    \"is_carousel_item\": true\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        976,
+        1120
+      ],
+      "id": "edd422c0-12cb-4276-8abd-afb71558e170",
+      "name": "[Meta] Init Child Container"
+    },
+    {
+      "parameters": {
+        "jsCode": "const allChildResponses = $input.all();\n\n// Извлекаем реальные ID созданных контейнеров\nconst childContainerIds = allChildResponses\n  .map(item => item.json.id)\n  .filter(id => Boolean(id));\n\nreturn [{\n  json: {\n    children: childContainerIds.join(','), // Формат: \"1801...,1802...,1803...\"\n    items_count: childContainerIds.length\n  }\n}];"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1136,
+        1120
+      ],
+      "id": "52b81a5c-3038-401a-a416-36fd7b3b2187",
+      "name": "[Logic] Собрать ID контейнеров"
+    },
+    {
+      "parameters": {
+        "amount": 10
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1296,
+        1120
+      ],
+      "id": "e6cde2af-b02e-4ce5-b619-9b66d8652424",
+      "name": "[System] Пауза на скачивание слайдов",
+      "webhookId": "5f3577f1-1c6c-4ab9-b9db-1e10e1072c52"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить черновик карусели').item.json.platform_user_id }}/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  {\n    \"media_type\": \"CAROUSEL\",\n    \"children\": $json.children,\n    \"caption\": $('[DB] Загрузить черновик карусели').item.json.draft_data?.caption || \"\"\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1472,
+        1120
+      ],
+      "id": "38d4e89b-b2d5-47bc-b54f-12a6fa0a6338",
+      "name": "[Meta] Init Parent Carousel",
+      "retryOnFail": true,
+      "waitBetweenTries": 5000
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить черновик карусели').item.json.platform_user_id }}/media_publish",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"creation_id\": \"{{ $json.id }}\"\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2352,
+        1088
+      ],
+      "id": "08660f29-fc43-42f8-bdf8-3314e17a1ad2",
+      "name": "[Meta] Publish Carousel",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить черновик карусели').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить черновик карусели').item.json.internal_platform_id }},\n    'instagram',\n    'carousel',\n    '{{ $('[DB] Загрузить черновик карусели').item.json.draft_data?.items[0]?.file_id || \"\" }}',\n    '{{ ($('[DB] Загрузить черновик карусели').item.json.draft_data?.caption || \"\").replace(/'/g, \"''\") }}',\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        2512,
+        1088
+      ],
+      "id": "e1492e97-ec9d-4dac-91c2-a39e8f2f1dd0",
+      "name": "[DB] Сохранить публикацию (Carousel)",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[DB] Загрузить черновик карусели').item.json.chat_id }}",
+        "text": "=🎉 Карусель успешно опубликована в Instagram!\n\n🆔 ID публикации: {{ $('[Meta] Publish Carousel').item.json.id }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2688,
+        1088
+      ],
+      "id": "914c50ce-6a02-468c-a8ff-24a6aa4c1de4",
+      "name": "[TG] Success Alert (Carousel)",
+      "webhookId": "0dbce877-cacd-43fe-bf0f-a42fd9fcccfa",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1648,
+        1120
+      ],
+      "id": "c9221b03-9754-4a4c-bb83-b2d8c859d0b5",
+      "name": "[System] Пауза проверки карусели",
+      "webhookId": "5f3577f1-1c6c-4ab9-b9db-1e10e1072c52"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Meta] Init Parent Carousel').item.json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1840,
+        1120
+      ],
+      "id": "b48377e6-3b72-4192-a228-3a0c32a18767",
+      "name": "[Meta] Проверить статус карусели"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status_code === 'FINISHED' }}",
+                    "rightValue": "FINISHED",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "6071445b-fdaf-4ecc-aff2-f4979ecb33df"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ready"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "84837a0b-4e79-4d46-80d7-66f9aeb1b0fa",
+                    "leftValue": "={{ $json.status_code === 'IN_PROGRESS' && $runIndex < 12 }}",
+                    "rightValue": "IN_PROGRESS",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "In Progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "2eb880c6-bff6-4059-bdac-f24c7e506a9c",
+                    "leftValue": "={{ $json.status_code === 'ERROR' || $runIndex >= 12 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Error or Timeout"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        2048,
+        1104
+      ],
+      "id": "502ff439-dad3-47c6-9202-e594aab6b102",
+      "name": "[Logic] Готовность карусели"
     }
   ],
   "pinData": {},
@@ -2461,6 +2926,13 @@
         [
           {
             "node": "[TG] Экран: Онбординг Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[DB] Загрузить черновик карусели",
             "type": "main",
             "index": 0
           }
@@ -2607,7 +3079,7 @@
         ],
         [
           {
-            "node": "[Logic] Диспетчер форматов",
+            "node": "[Logic] Диспетчер платформ",
             "type": "main",
             "index": 0
           }
@@ -2732,31 +3204,6 @@
         [
           {
             "node": "[Logic] Проверка готовности Reels",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "[Logic] Диспетчер форматов": {
-      "main": [
-        [
-          {
-            "node": "[TG] Get File Path",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "[TG] Get File Path (Post)",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "[DB] Накопить элемент карусели",
             "type": "main",
             "index": 0
           }
@@ -2951,6 +3398,210 @@
           }
         ]
       ]
+    },
+    "[Logic] Диспетчер форматов (Instagram)": {
+      "main": [
+        [
+          {
+            "node": "[TG] Get File Path",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Get File Path (Post)",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[DB] Накопить элемент карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Диспетчер платформ": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Диспетчер форматов (Instagram)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Загрузить черновик карусели": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Guard: Карусель готова?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Guard: Карусель готова?": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Развернуть слайды",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Развернуть слайды": {
+      "main": [
+        [
+          {
+            "node": "[TG] Get File Path (Slide)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Get File Path (Slide)": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Init Child Container",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Init Child Container": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Собрать ID контейнеров",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Собрать ID контейнеров": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза на скачивание слайдов",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза на скачивание слайдов": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Init Parent Carousel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Init Parent Carousel": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза проверки карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Publish Carousel": {
+      "main": [
+        [
+          {
+            "node": "[DB] Сохранить публикацию (Carousel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Сохранить публикацию (Carousel)": {
+      "main": [
+        [
+          {
+            "node": "[TG] Success Alert (Carousel)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Success Alert (Carousel)": {
+      "main": [
+        [
+          {
+            "node": "[DB] Сброс состояния (IDLE)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза проверки карусели": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Проверить статус карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Проверить статус карусели": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Готовность карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Готовность карусели": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Publish Carousel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[System] Пауза проверки карусели",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Ошибка публикации",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -2958,7 +3609,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "187b81eb-7722-4d8a-9dc7-7ffea88a2593",
+  "versionId": "24e576ef-8062-4932-a7a1-05f4e2c30e48",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
