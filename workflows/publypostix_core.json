@@ -1385,7 +1385,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить контекст и токен').item.json.internal_platform_id }},\n    '{{ $('[DB] Загрузить контекст и токен').item.json.draft_data.target_platform }}',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.draft_data.target_format }}',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}',\n    '{{ ($('[DB] Загрузить контекст и токен').item.json.caption || \"\").replace(/'/g, \"''\") }}',\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
+        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    media_payload,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить контекст и токен').item.json.internal_platform_id }},\n    '{{ $('[DB] Загрузить контекст и токен').item.json.draft_data.target_platform }}',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.draft_data.target_format }}',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}',\n    '{{ ($('[DB] Загрузить контекст и токен').item.json.caption || \"\").replace(/'/g, \"''\") }}',\n    jsonb_build_array(\n        jsonb_build_object(\n            'index', 1,\n            'type', 'video',\n            'file_id', '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}'\n        )\n    ),\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -1804,7 +1804,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить контекст и токен').item.json.internal_platform_id }},\n    'instagram',\n    'feed_post',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}',\n    '{{ ($('[DB] Загрузить контекст и токен').item.json.caption || \"\").replace(/'/g, \"''\") }}',\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
+        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    media_payload,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить контекст и токен').item.json.internal_platform_id }},\n    'instagram',\n    'feed_post',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}',\n    '{{ ($('[DB] Загрузить контекст и токен').item.json.caption || \"\").replace(/'/g, \"''\") }}',\n    jsonb_build_array(\n        jsonb_build_object(\n            'index', 1,\n            'type', '{{ $('[DB] Загрузить контекст и токен').item.json.incoming_type }}',\n            'file_id', '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}'\n        )\n    ),\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -2618,7 +2618,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить черновик карусели').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить черновик карусели').item.json.internal_platform_id }},\n    'instagram',\n    'carousel',\n    '{{ $('[DB] Загрузить черновик карусели').item.json.draft_data?.items[0]?.file_id || \"\" }}',\n    '{{ ($('[DB] Загрузить черновик карусели').item.json.draft_data?.caption || \"\").replace(/'/g, \"''\") }}',\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
+        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    media_payload,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить черновик карусели').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить черновик карусели').item.json.internal_platform_id }},\n    'instagram',\n    'carousel',\n    '{{ $('[DB] Загрузить черновик карусели').item.json.draft_data?.items[0]?.file_id || \"\" }}',\n    '{{ ($('[DB] Загрузить черновик карусели').item.json.draft_data?.caption || \"\").replace(/'/g, \"''\") }}',\n    '{{ JSON.stringify($('[DB] Загрузить черновик карусели').item.json.draft_data?.items || []).replace(/'/g, \"''\") }}'::jsonb,\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -3399,6 +3399,54 @@
           "name": "Telegram account"
         }
       }
+    },
+    {
+      "parameters": {
+        "content": "REELS",
+        "height": 80,
+        "width": 150,
+        "color": "#00FF1E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2448,
+        1840
+      ],
+      "id": "72083b71-af29-4ac0-9bcb-fe4ca33ca3df",
+      "name": "Sticky Note"
+    },
+    {
+      "parameters": {
+        "content": "POST",
+        "height": 80,
+        "width": 150,
+        "color": "#00FF1E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2016,
+        2400
+      ],
+      "id": "72566cb3-cd88-4918-901c-a078ab48b86e",
+      "name": "Sticky Note1"
+    },
+    {
+      "parameters": {
+        "content": "CAROUSEL",
+        "height": 80,
+        "width": 150,
+        "color": "#00FF1E"
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        2704,
+        1152
+      ],
+      "id": "7e6c8a8d-d58e-45f9-b3a0-f56865a1cce4",
+      "name": "Sticky Note2"
     }
   ],
   "pinData": {},
@@ -4347,12 +4395,12 @@
       ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "ec133af6-d2bc-42c7-8152-64bcd1243858",
+  "versionId": "b5871c57-e97f-4d6b-940d-9dc7df48faa3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
