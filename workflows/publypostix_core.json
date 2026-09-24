@@ -502,8 +502,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 2.1,
       "position": [
-        -896,
-        3200
+        -1136,
+        3904
       ],
       "id": "ba8e8bb9-a28a-49d9-8d0b-0e261d794306",
       "name": "[Auth] Webhook Instagram OAuth",
@@ -520,8 +520,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        224,
-        3104
+        -16,
+        3808
       ],
       "id": "17dd1471-9b27-403a-a566-9be6a74f5948",
       "name": "[TG] Удалить экран онбординга",
@@ -619,8 +619,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -672,
-        3200
+        -912,
+        3904
       ],
       "id": "86640a8c-902d-4f44-881e-5a305c2f8a2c",
       "name": "[Meta] Обмен code на Access Token",
@@ -667,8 +667,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        224,
-        3296
+        -16,
+        4000
       ],
       "id": "721ecc9a-4e95-4f9c-9131-a223b62c54c4",
       "name": "[TG] Экран: Успех авторизации Meta",
@@ -712,8 +712,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        0,
-        3200
+        -240,
+        3904
       ],
       "id": "fc05a35b-7510-41c0-b46c-ecb84bea35b4",
       "name": "[DB] Save Platform Token",
@@ -841,8 +841,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        640,
-        544
+        800,
+        480
       ],
       "id": "e7c2281b-eb5d-4b01-991b-ef43f7547fed",
       "name": "[TG] Экран: Запрос видео Reels",
@@ -900,8 +900,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        -448,
-        3280
+        -688,
+        3984
       ],
       "id": "7b5d51f4-0f97-4bec-8636-2e92326f8c6d",
       "name": "[Meta] Обмен на Long-Lived Token"
@@ -915,8 +915,8 @@
       "type": "n8n-nodes-base.merge",
       "typeVersion": 3.2,
       "position": [
-        -224,
-        3200
+        -464,
+        3904
       ],
       "id": "8ffe5944-599b-4a12-9d65-3adc1e73066f",
       "name": "[Logic] Склейка токена Meta"
@@ -986,7 +986,7 @@
                 "conditions": [
                   {
                     "id": "9edd3852-2dc0-412c-9573-f088b1d33e5f",
-                    "leftValue": "={{ $json.current_state === 'IDLE' && ($json.incoming_type === 'video' || $json.incoming_type === 'photo') }}",
+                    "leftValue": "={{ $json.current_state === 'IDLE' }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -998,32 +998,7 @@
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "Spontaneous Video"
-            },
-            {
-              "conditions": {
-                "options": {
-                  "caseSensitive": true,
-                  "leftValue": "",
-                  "typeValidation": "strict",
-                  "version": 3
-                },
-                "conditions": [
-                  {
-                    "id": "7617721d-1a77-4f66-8f0f-166a2d4a14af",
-                    "leftValue": "={{ $json.current_state === 'IDLE' && $json.incoming_type === 'text' }}",
-                    "rightValue": "",
-                    "operator": {
-                      "type": "boolean",
-                      "operation": "true",
-                      "singleValue": true
-                    }
-                  }
-                ],
-                "combinator": "and"
-              },
-              "renameOutput": true,
-              "outputKey": "Idle Text"
+              "outputKey": "Idle Input"
             },
             {
               "conditions": {
@@ -1062,47 +1037,6 @@
       ],
       "id": "99d54f06-965e-46ff-8cd4-b1b3bc48a7e2",
       "name": "[Logic] Роутер медиа"
-    },
-    {
-      "parameters": {
-        "chatId": "={{ $json.chat_id }}",
-        "text": "🎬 Видео получено!\n\nВы отправили видео напрямую. Куда и в каком формате его опубликовать?",
-        "replyMarkup": "inlineKeyboard",
-        "inlineKeyboard": {
-          "rows": [
-            {
-              "row": {
-                "buttons": [
-                  {
-                    "text": "📸 Instagram Reels",
-                    "additionalFields": {
-                      "callback_data": "platform:instagram"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -80,
-        1616
-      ],
-      "id": "171f82b3-94a3-4607-b5e6-466c1b07a2df",
-      "name": "[TG] Экран: Куда публикуем?",
-      "webhookId": "fb92512c-7c60-4fb7-9fbf-1ab989a4e00e",
-      "credentials": {
-        "telegramApi": {
-          "id": "sLY97LbuJGe6Ytey",
-          "name": "Telegram account"
-        }
-      }
     },
     {
       "parameters": {
@@ -1504,47 +1438,6 @@
     },
     {
       "parameters": {
-        "chatId": "={{ $json.chat_id }}",
-        "text": "ℹ️ Сообщение не распознано.\n\nЧтобы опубликовать материал в соцсети, нажмите кнопку «✍️ Создать пост» в меню или отправьте видеофайл.",
-        "replyMarkup": "inlineKeyboard",
-        "inlineKeyboard": {
-          "rows": [
-            {
-              "row": {
-                "buttons": [
-                  {
-                    "text": "🏠 Главное меню",
-                    "additionalFields": {
-                      "callback_data": "nav:main"
-                    }
-                  }
-                ]
-              }
-            }
-          ]
-        },
-        "additionalFields": {
-          "appendAttribution": false
-        }
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        -80,
-        1808
-      ],
-      "id": "4b404ba0-1550-406b-9bdf-c8de442c8c9c",
-      "name": "[TG] Подсказка (IDLE)",
-      "webhookId": "af032860-16d0-49b8-8dda-77a4b3b09d51",
-      "credentials": {
-        "telegramApi": {
-          "id": "sLY97LbuJGe6Ytey",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "operation": "editMessageText",
         "chatId": "={{ $json.chat_id }}",
         "messageId": "={{ $json.message_id }}",
@@ -1639,6 +1532,18 @@
               "row": {
                 "buttons": [
                   {
+                    "text": "⏳ Stories (Фото / Видео 9:16)",
+                    "additionalFields": {
+                      "callback_data": "format:instagram:stories"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
                     "text": "◀️ Назад к выбору площадки",
                     "additionalFields": {
                       "callback_data": "nav:create_post"
@@ -1654,8 +1559,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        672,
-        112
+        848,
+        32
       ],
       "id": "5f46b76c-7728-4dc7-8e10-0c2ee8bd0d5c",
       "name": "[TG] Экран: Форматы Instagram",
@@ -1695,8 +1600,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        640,
-        720
+        656,
+        592
       ],
       "id": "82e40ac2-8257-4a66-b333-4485ba74c08b",
       "name": "[TG] Экран: Запрос медиа для поста",
@@ -1736,8 +1641,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -80,
-        1424
+        -16,
+        1632
       ],
       "id": "5ffe0373-06a3-4704-aeaa-b51cae27ca76",
       "name": "[TG] Ошибка формата контента",
@@ -2012,7 +1917,7 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE users \nSET \n    current_state = 'WAITING_' || UPPER('{{ $json.callback_query.data.split(':')[1] }}') || '_' || UPPER('{{ $json.callback_query.data.split(':')[2] }}'),\n    draft_data = jsonb_build_object(\n        'target_platform', '{{ $json.callback_query.data.split(':')[1] }}',\n        'target_format', '{{ $json.callback_query.data.split(':')[2] }}',\n        'allowed_types', CASE \n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'reels' THEN jsonb_build_array('video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'feed_post' THEN jsonb_build_array('photo', 'video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'carousel' THEN jsonb_build_array('photo', 'video', 'text')\n            ELSE jsonb_build_array('photo', 'video', 'text')\n        END,\n        'items', '[]'::jsonb,\n        'caption', '',\n        'dashboard_message_id', {{ $json.callback_query.message.message_id }}::bigint,\n        'step', 'collecting_items'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.callback_query.from.id }}::bigint\nRETURNING \n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id,\n    '{{ $json.callback_query.data.split(':')[1] }}' AS target_platform,\n    '{{ $json.callback_query.data.split(':')[2] }}' AS target_format;",
+        "query": "UPDATE users \nSET \n    current_state = 'WAITING_' || UPPER('{{ $json.callback_query.data.split(':')[1] }}') || '_' || UPPER('{{ $json.callback_query.data.split(':')[2] }}'),\n    draft_data = jsonb_build_object(\n        'target_platform', '{{ $json.callback_query.data.split(':')[1] }}',\n        'target_format', '{{ $json.callback_query.data.split(':')[2] }}',\n        'allowed_types', CASE \n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'reels' THEN jsonb_build_array('video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'feed_post' THEN jsonb_build_array('photo', 'video')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'carousel' THEN jsonb_build_array('photo', 'video', 'text')\n            WHEN '{{ $json.callback_query.data.split(':')[2] }}' = 'stories' THEN jsonb_build_array('photo', 'video')\n            ELSE jsonb_build_array('photo', 'video', 'text')\n        END,\n        'items', '[]'::jsonb,\n        'caption', '',\n        'dashboard_message_id', {{ $json.callback_query.message.message_id }}::bigint,\n        'step', 'collecting_items'\n    ),\n    updated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.callback_query.from.id }}::bigint\nRETURNING \n    {{ $json.callback_query.message.chat.id }}::bigint AS chat_id,\n    {{ $json.callback_query.message.message_id }}::bigint AS message_id,\n    '{{ $json.callback_query.data.split(':')[1] }}' AS target_platform,\n    '{{ $json.callback_query.data.split(':')[2] }}' AS target_format;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
@@ -2107,6 +2012,31 @@
               },
               "renameOutput": true,
               "outputKey": "Carousel Prompt"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "fcc1ede2-6aeb-4572-be43-a510a44cfbfd",
+                    "leftValue": "={{ $json.target_format }}",
+                    "rightValue": "stories",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Stories Prompt"
             }
           ]
         },
@@ -2149,8 +2079,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        640,
-        912
+        800,
+        688
       ],
       "id": "883f0a2a-7921-40ac-92c4-7d3dd165d14d",
       "name": "[TG] Экран: Запрос файлов карусели",
@@ -2165,14 +2095,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "UPDATE users\nSET draft_data = jsonb_set(\n    jsonb_set(\n        draft_data,\n        '{items}',\n        CASE \n            WHEN '{{ $json.incoming_type }}' IN ('photo', 'video') \n                 AND jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) < 10\n            THEN COALESCE(draft_data->'items', '[]'::jsonb) || jsonb_build_object(\n                'index', jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) + 1,\n                'type', '{{ $json.incoming_type }}',\n                'file_id', '{{ $json.file_id }}'\n            )::jsonb\n            ELSE COALESCE(draft_data->'items', '[]'::jsonb)\n        END\n    ),\n    '{caption}',\n    CASE \n        WHEN '{{ ($json.caption || \"\").replace(/'/g, \"''\") }}' <> '' \n        THEN to_jsonb('{{ ($json.caption || \"\").replace(/'/g, \"''\") }}'::text)\n        ELSE COALESCE(draft_data->'caption', '\"\"'::jsonb)\n    END\n),\nupdated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.chat_id }}::bigint\nRETURNING \n    telegram_id AS chat_id,\n    draft_data,\n    (draft_data->>'dashboard_message_id')::bigint AS old_dashboard_id,\n    jsonb_array_length(draft_data->'items') AS items_count,\n    draft_data->>'caption' AS current_caption;",
+        "query": "UPDATE users\nSET draft_data = draft_data || jsonb_build_object(\n    -- 1. Накопление элементов строго до 10 штук\n    'items', CASE \n        WHEN '{{ $json.incoming_type }}' IN ('photo', 'video') \n             AND jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) < 10\n        THEN COALESCE(draft_data->'items', '[]'::jsonb) || jsonb_build_object(\n            'index', jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) + 1,\n            'type', '{{ $json.incoming_type }}',\n            'file_id', '{{ $json.file_id }}'\n        )::jsonb\n        ELSE COALESCE(draft_data->'items', '[]'::jsonb)\n    END,\n    \n    -- 2. Обновление подписи\n    'caption', CASE \n        WHEN '{{ ($json.caption || \"\").replace(/'/g, \"''\") }}' <> '' \n        THEN '{{ ($json.caption || \"\").replace(/'/g, \"''\") }}'::text\n        ELSE COALESCE(draft_data->>'caption', '')\n    END,\n    \n    -- 3. Детекция превышения лимита\n    'limit_exceeded', CASE \n        WHEN '{{ $json.incoming_type }}' IN ('photo', 'video') \n             AND jsonb_array_length(COALESCE(draft_data->'items', '[]'::jsonb)) >= 10\n        THEN true\n        ELSE COALESCE((draft_data->>'limit_exceeded')::boolean, false)\n    END,\n\n    -- 4. Монотонный счётчик событий пачки для детерминированных выборов лидера\n    'received_count', COALESCE((draft_data->>'received_count')::int, 0) + 1\n),\nupdated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.chat_id }}::bigint\nRETURNING \n    telegram_id AS chat_id,\n    draft_data,\n    (draft_data->>'dashboard_message_id')::bigint AS old_dashboard_id,\n    jsonb_array_length(draft_data->'items') AS items_count,\n    (draft_data->>'received_count')::int AS my_seq,\n    draft_data->>'caption' AS current_caption;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        464,
-        2768
+        512,
+        2688
       ],
       "id": "3e00ef21-d2c8-4e2d-8d22-532e313399fd",
       "name": "[DB] Накопить элемент карусели",
@@ -2186,7 +2116,7 @@
     {
       "parameters": {
         "chatId": "={{ $('[DB] Актуализировать счетчик карусели').item.json.chat_id }}",
-        "text": "=🎞 Сборка карусели Instagram ({{ $('[DB] Актуализировать счетчик карусели').item.json.items_count }}/10)\n\nСостав публикации:\n{{ ($('[DB] Актуализировать счетчик карусели').item.json.draft_data?.items || []).map((item, idx) => `${idx + 1}. ${item.type === 'photo' ? 'Фотография 🖼' : 'Видеоролик 🎬'}`).join('\\n') }}\n\n📝 Описание: {{ $('[DB] Актуализировать счетчик карусели').item.json.current_caption ? `«${$('[DB] Актуализировать счетчик карусели').item.json.current_caption}»` : 'отсутствует (будет опубликовано без текста)' }}\n\n{{\n  (() => {\n    const count = $('[DB] Актуализировать счетчик карусели').item.json.items_count || 0;\n    if (count === 0) {\n      return '⚠️ Для публикации карусели добавьте минимум 2 файла (фотографии или видео).';\n    } else if (count === 1) {\n      return '⚠️ Для публикации карусели добавьте ещё минимум 1 файл.';\n    } else {\n      return '✅ Карусель готова к публикации!';\n    }\n  })()\n}}",
+        "text": "=🎞 Сборка карусели Instagram ({{ $('[DB] Актуализировать счетчик карусели').item.json.items_count }}/10)\n\nСостав публикации:\n{{ ($('[DB] Актуализировать счетчик карусели').item.json.draft_data?.items || []).map((item, idx) => `${idx + 1}. ${item.type === 'photo' ? 'Фотография 🖼' : 'Видеоролик 🎬'}`).join('\\n') }}\n\n📝 Описание: {{ $('[DB] Актуализировать счетчик карусели').item.json.current_caption ? `«${$('[DB] Актуализировать счетчик карусели').item.json.current_caption}»` : 'отсутствует (будет опубликовано без текста)' }}\n\n{{\n  (() => {\n    const data = $('[DB] Актуализировать счетчик карусели').item.json;\n    const count = data.items_count || 0;\n    const limitExceeded = data.draft_data?.limit_exceeded === true;\n\n    if (limitExceeded) {\n      return '⚠️ Внимание: достигнут лимит Instagram (максимум 10 файлов)!\\nФайл(ы) сверх лимита не добавлены.\\n\\n✅ Карусель укомплектована и готова к публикации:';\n    }\n\n    if (count === 0) {\n      return '⚠️ Для публикации карусели добавьте минимум 2 файла (фотографии или видео).';\n    } else if (count === 1) {\n      return '⚠️ Для публикации карусели добавьте ещё минимум 1 файл.';\n    } else if (count === 10) {\n      return '🎉 Карусель заполнена до максимума (10/10)!\\nНовые файлы больше не принимаются. Нажмите кнопку публикации:';\n    } else {\n      return '✅ Карусель готова к публикации!\\n(Вы можете отправить ещё файлы или нажать кнопку ниже)';\n    }\n  })()\n}}",
         "replyMarkup": "inlineKeyboard",
         "inlineKeyboard": {
           "rows": [
@@ -2223,8 +2153,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1360,
-        2752
+        1408,
+        2672
       ],
       "id": "f46c781e-caed-45bd-b23e-b8a0192fa43b",
       "name": "[TG] Экран: Сборка карусели",
@@ -2245,8 +2175,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1216,
-        2752
+        1264,
+        2672
       ],
       "id": "4b83b7c4-92dd-4678-9b61-cc8d90becd98",
       "name": "[TG] Удалить предыдущую карточку",
@@ -2269,8 +2199,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1520,
-        2752
+        1568,
+        2672
       ],
       "id": "c29e627d-b203-436a-a8ee-10f2acda8e35",
       "name": "[DB] Зафиксировать message_id карточки",
@@ -2399,6 +2329,31 @@
               },
               "renameOutput": true,
               "outputKey": "Instagram Carousel"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "72a3182e-6146-4462-9179-1ab43a4b17f5",
+                    "leftValue": "={{ $json.draft_data?.target_format }}",
+                    "rightValue": "stories",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Instagram Stories"
             }
           ]
         },
@@ -2684,8 +2639,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        640,
-        2768
+        688,
+        2688
       ],
       "id": "d715a0e1-2d2e-4cf3-a55a-c32ffafc0dc9",
       "name": "[System] Буфер пачки медиа",
@@ -2694,14 +2649,14 @@
     {
       "parameters": {
         "operation": "executeQuery",
-        "query": "SELECT \n    telegram_id AS chat_id,\n    draft_data,\n    (draft_data->>'dashboard_message_id')::bigint AS old_dashboard_id,\n    jsonb_array_length(draft_data->'items') AS items_count,\n    draft_data->>'caption' AS current_caption\nFROM users \nWHERE telegram_id = {{ $('[DB] Накопить элемент карусели').item.json.chat_id }}::bigint;",
+        "query": "SELECT \n    telegram_id AS chat_id,\n    draft_data,\n    (draft_data->>'dashboard_message_id')::bigint AS old_dashboard_id,\n    jsonb_array_length(draft_data->'items') AS items_count,\n    (draft_data->>'received_count')::int AS current_max_seq,\n    draft_data->>'caption' AS current_caption\nFROM users \nWHERE telegram_id = {{ $('[DB] Накопить элемент карусели').item.json.chat_id }}::bigint;",
         "options": {}
       },
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        816,
-        2768
+        864,
+        2688
       ],
       "id": "bff0f2f7-bd6d-4e0f-aec6-9e1cabccabde",
       "name": "[DB] Актуализировать счетчик карусели",
@@ -3006,8 +2961,8 @@
           "conditions": [
             {
               "id": "123fd9ff-1755-4454-ad9a-9ed60574df07",
-              "leftValue": "={{ $('[DB] Накопить элемент карусели').item.json.items_count }}",
-              "rightValue": "={{ $json.items_count }}",
+              "leftValue": "={{ $('[DB] Накопить элемент карусели').item.json.my_seq }}",
+              "rightValue": "={{ $json.current_max_seq }}",
               "operator": {
                 "type": "number",
                 "operation": "equals"
@@ -3021,8 +2976,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        992,
-        2768
+        1040,
+        2688
       ],
       "id": "e2b87c25-01e9-4633-a390-2a46ba60f738",
       "name": "[Logic] Guard: Последний элемент пачки?"
@@ -3442,11 +3397,453 @@
       "type": "n8n-nodes-base.stickyNote",
       "typeVersion": 1,
       "position": [
-        2704,
-        1152
+        3184,
+        848
       ],
       "id": "7e6c8a8d-d58e-45f9-b3a0-f56865a1cce4",
       "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "⚠️ Публикация не начата!\n\nЧтобы опубликовать фото, видео или карусель, сначала выберите целевую платформу и формат публикации. \n\nМатериал можно будет отправить сразу после настройки поста.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "✍️ Начать публикацию",
+                    "additionalFields": {
+                      "callback_data": "nav:create_post"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -32,
+        1840
+      ],
+      "id": "4b404ba0-1550-406b-9bdf-c8de442c8c9c",
+      "name": "[TG] Экран: Сначала выберите платформу",
+      "webhookId": "af032860-16d0-49b8-8dda-77a4b3b09d51",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.chat_id }}",
+        "messageId": "={{ $json.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "⏳ Публикация Instagram Stories\n\nОтправьте одно вертикальное фото или видеоролик (формат 9:16, видео до 60 сек) прямо в этот диалог.\n\n💡 Официальный API Instagram публикует истории без текстовых подписей. Текст можно наложить заранее в редакторе перед отправкой.",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "❌ Отмена",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        624,
+        816
+      ],
+      "id": "efd81c73-0bbd-49bb-8905-85e067c42d56",
+      "name": "[TG] Экран: Запрос медиа для Stories",
+      "webhookId": "ccbe26ba-5c2b-4bf2-8f76-ab0636fc0114",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $('[DB] Загрузить контекст и токен').item.json.file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        416,
+        2992
+      ],
+      "id": "d30ed565-b5ed-4244-b787-4fa4d29889f0",
+      "name": "[TG] Get File Path (Stories)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить контекст и токен').item.json.platform_user_id }}/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  $('[DB] Загрузить контекст и токен').item.json.incoming_type === 'video' ? {\n    \"media_type\": \"STORIES\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path\n  } : {\n    \"media_type\": \"STORIES\",\n    \"image_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        592,
+        2992
+      ],
+      "id": "294609dd-d05e-4045-bc77-d8e4a29c9a89",
+      "name": "[Meta] Init Story"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "text": "⏳ Материал отправлен в Meta. Начинаем подготовку Stories...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        752,
+        2992
+      ],
+      "id": "5e1d73b1-48a4-4546-ab9f-1954756fd401",
+      "name": "[TG] Статус: Обработка Stories",
+      "webhookId": "b03ea923-b3f1-4e46-8679-54f7db8fadd7",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        928,
+        2992
+      ],
+      "id": "d1c326ae-dc41-425d-adf4-a51bdbcca916",
+      "name": "[System] Пауза проверки Stories",
+      "webhookId": "5950d48b-ce80-4cc4-b385-8bc6c821f560"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Meta] Init Story').item.json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1088,
+        2992
+      ],
+      "id": "7a876d82-3098-46c5-bc88-7ed6f72c0734",
+      "name": "[Meta] Проверить статус Stories"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status_code === 'FINISHED' || !$json.status_code }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "18a1a028-0837-4c18-b520-9a429fd98d06"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ready"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c90522f3-0c4b-44ee-b885-30d925e30fb4",
+                    "leftValue": "={{ $json.status_code === 'IN_PROGRESS' && $runIndex < 12 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "In Progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e9209307-c260-4dab-b623-95b682118619",
+                    "leftValue": "={{ $json.status_code === 'ERROR' || $runIndex >= 12 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Error or Timeout"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1264,
+        2976
+      ],
+      "id": "44c4fc10-c788-48d9-b577-7128d6f0890b",
+      "name": "[Logic] Готовность Stories"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "messageId": "={{ $('[TG] Статус: Обработка Stories').item.json.message_id || $('[TG] Статус: Обработка Stories').item.json.result.message_id }}",
+        "text": "=⚙️ Обработка Stories на серверах Meta... Пожалуйста, подождите {{ ['⏳', '⌛', '🔄', '⚙️'][$runIndex % 4] }} (проверка {{ $runIndex + 1 }})",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1472,
+        3152
+      ],
+      "id": "518cf9aa-f6e4-4ae3-b1eb-0f4c8a7ae070",
+      "name": "[TG] Обновить статус Stories",
+      "webhookId": "1c62fa87-45fc-4c9a-8ff8-8aa4f584aaac",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить контекст и токен').item.json.platform_user_id }}/media_publish",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"creation_id\": \"{{ $('[Meta] Init Story').item.json.id }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1616,
+        2960
+      ],
+      "id": "2dcfe9b4-edd7-4436-a211-93818f27428b",
+      "name": "[Meta] Publish Story",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO publications (\n    user_id,\n    platform_account_id,\n    platform,\n    media_type,\n    media_file_id,\n    caption,\n    media_payload,\n    status,\n    platform_post_id,\n    published_at\n) VALUES (\n    {{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}::bigint,\n    {{ $('[DB] Загрузить контекст и токен').item.json.internal_platform_id }},\n    'instagram',\n    'stories',\n    '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}',\n    '',\n    jsonb_build_array(\n        jsonb_build_object(\n            'index', 1,\n            'type', '{{ $('[DB] Загрузить контекст и токен').item.json.incoming_type }}',\n            'file_id', '{{ $('[DB] Загрузить контекст и токен').item.json.file_id }}'\n        )\n    ),\n    'published',\n    '{{ $json.id }}',\n    CURRENT_TIMESTAMP\n);",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        1792,
+        2960
+      ],
+      "id": "aca46b64-3e81-4256-8a80-8df0c263b3fd",
+      "name": "[DB] Сохранить публикацию (Stories)",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "messageId": "={{ $('[TG] Статус: Обработка Stories').item.json.message_id || $('[TG] Статус: Обработка Stories').item.json.result.message_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1968,
+        2960
+      ],
+      "id": "87b8007c-2521-43a2-b9d0-69bad1034bbc",
+      "name": "[TG] Удалить статус Stories",
+      "webhookId": "592a7682-92de-4e21-8a72-1fd49ef92bb3",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "text": "=🎉 История (Stories) успешно опубликована в Instagram!\n\n🆔 ID публикации: {{ $('[Meta] Publish Story').item.json.id }}",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2144,
+        2960
+      ],
+      "id": "ae23224d-200c-4d3f-a517-9d9e2b5a3c7c",
+      "name": "[TG] Success Alert (Stories)",
+      "webhookId": "4fb2b567-0984-4d51-88c4-90cbcc38634a",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -3662,14 +4059,7 @@
         ],
         [
           {
-            "node": "[TG] Экран: Куда публикуем?",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "[TG] Подсказка (IDLE)",
+            "node": "[TG] Экран: Сначала выберите платформу",
             "type": "main",
             "index": 0
           }
@@ -3938,6 +4328,13 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "[TG] Экран: Запрос медиа для Stories",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
@@ -3993,6 +4390,13 @@
         [
           {
             "node": "[DB] Накопить элемент карусели",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Get File Path (Stories)",
             "type": "main",
             "index": 0
           }
@@ -4393,6 +4797,141 @@
           }
         ]
       ]
+    },
+    "[TG] Get File Path (Stories)": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Init Story",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Init Story": {
+      "main": [
+        [
+          {
+            "node": "[TG] Статус: Обработка Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Статус: Обработка Stories": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза проверки Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза проверки Stories": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Проверить статус Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Проверить статус Stories": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Готовность Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Готовность Stories": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Publish Story",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Обновить статус Stories",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Ошибка публикации",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Publish Story": {
+      "main": [
+        [
+          {
+            "node": "[DB] Сохранить публикацию (Stories)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Сохранить публикацию (Stories)": {
+      "main": [
+        [
+          {
+            "node": "[TG] Удалить статус Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Удалить статус Stories": {
+      "main": [
+        [
+          {
+            "node": "[TG] Success Alert (Stories)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Success Alert (Stories)": {
+      "main": [
+        [
+          {
+            "node": "[DB] Сброс состояния (IDLE)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Обновить статус Stories": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза проверки Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": true,
@@ -4400,12 +4939,26 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "b5871c57-e97f-4d6b-940d-9dc7df48faa3",
+  "versionId": "5ca3cfcf-fbd6-4a76-b1fa-d2f8c4f30ca7",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
   },
-  "nodeGroups": [],
+  "nodeGroups": [
+    {
+      "id": "a92b2ea6-78d2-4557-b583-07a0b41f0d7f",
+      "name": "Создание карусели",
+      "nodeIds": [
+        "3e00ef21-d2c8-4e2d-8d22-532e313399fd",
+        "f46c781e-caed-45bd-b23e-b8a0192fa43b",
+        "4b83b7c4-92dd-4678-9b61-cc8d90becd98",
+        "c29e627d-b203-436a-a8ee-10f2acda8e35",
+        "d715a0e1-2d2e-4cf3-a55a-c32ffafc0dc9",
+        "bff0f2f7-bd6d-4e0f-aec6-9e1cabccabde",
+        "e2b87c25-01e9-4633-a390-2a46ba60f738"
+      ]
+    }
+  ],
   "id": "gioPRPxokEL9rFEA",
   "tags": []
 }
