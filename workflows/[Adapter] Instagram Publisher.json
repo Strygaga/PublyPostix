@@ -433,26 +433,26 @@
     },
     {
       "parameters": {
-        "jsCode": "let platformPostId = null;\n\n// 1. Проверка ветки Reels\ntry {\n  const items = $('[Meta] Publish Reels').all();\n  if (items.length > 0 && items[0].json?.id) {\n    platformPostId = items[0].json.id;\n  }\n} catch (e) {\n  // Ветка не выполнялась\n}\n\n// 2. Проверка ветки Stories\nif (!platformPostId) {\n  try {\n    const items = $('[Meta] Publish Story').all();\n    if (items.length > 0 && items[0].json?.id) {\n      platformPostId = items[0].json.id;\n    }\n  } catch (e) {\n    // Ветка не выполнялась\n  }\n}\n\n// 3. Проверка ветки Feed Post\nif (!platformPostId) {\n  try {\n    const items = $('[Meta] Publish Photo Post').all();\n    if (items.length > 0 && items[0].json?.id) {\n      platformPostId = items[0].json.id;\n    }\n  } catch (e) {\n    // Ветка не выполнялась\n  }\n}\n\n// 4. Проверка ветки Carousel (резерв под следующий шаг)\nif (!platformPostId) {\n  try {\n    const items = $('[Meta] Publish Carousel').all();\n    if (items.length > 0 && items[0].json?.id) {\n      platformPostId = items[0].json.id;\n    }\n  } catch (e) {\n    // Ветка не выполнялась\n  }\n}\n\n// Возврат чистого контракта для родительского сценария\nreturn $input.all().map(() => ({\n  json: {\n    success: true,\n    platform_post_id: platformPostId\n  }\n}));"
+        "jsCode": "const publishNodes = [\n  '[Meta] Publish Reels',\n  '[Meta] Publish Story',\n  '[Meta] Publish Photo Post',\n  '[Meta] Publish Carousel'\n];\n\nlet platformPostId = null;\n\nfor (const nodeName of publishNodes) {\n  try {\n    const executedItems = $(nodeName).all();\n    if (executedItems.length > 0 && executedItems[0].json?.id) {\n      platformPostId = executedItems[0].json.id;\n      break;\n    }\n  } catch (e) {}\n}\n\n// Извлекаем предупреждение, если карусель публиковалась с потерями\nlet warningMessage = null;\ntry {\n  warningMessage = $('[Logic] Анализ готовности слайдов').first().json.warning || null;\n} catch (e) {}\n\nreturn [{\n  json: {\n    success: true,\n    platform_post_id: platformPostId,\n    warning: warningMessage\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3728,
-        -320
+        5440,
+        -304
       ],
       "id": "bff3991a-7b0b-4148-8f3b-596097adb361",
       "name": "[Logic] Return Success"
     },
     {
       "parameters": {
-        "jsCode": "return $input.all().map(item => {\n  const err = item.json;\n  let message = 'Ошибка публикации в Instagram';\n\n  if (err.error?.message) {\n    message = err.error.message;\n  } else if (err.errorMessage) {\n    message = err.errorMessage;\n  } else if (err.status_code === 'ERROR') {\n    message = 'Серверы Meta отклонили медиафайл (проверьте пропорции 9:16 и битрейт)';\n  } else if (err.status_code === 'IN_PROGRESS') {\n    message = 'Превышено время ожидания кодирования видео на серверах Meta';\n  }\n\n  return {\n    json: {\n      success: false,\n      error_message: message\n    }\n  };\n});"
+        "jsCode": "const items = $input.all();\nconst err = items[0]?.json || {};\n\nfunction extractMetaMessage(e) {\n  const direct =\n    e?.details?.body?.error?.message ||\n    e?.error?.response?.data?.error?.message ||\n    e?.errorMessage;\n\n  if (direct) {\n    return String(direct);\n  }\n\n  const raw = e?.error?.message;\n\n  if (typeof raw === 'string') {\n    const idx = raw.indexOf('{');\n\n    if (idx >= 0) {\n      try {\n        const parsed = JSON.parse(raw.slice(idx));\n\n        if (parsed?.error?.message) {\n          return parsed.error.message;\n        }\n      } catch (parseError) {\n        // ignore\n      }\n    }\n\n    return raw;\n  }\n\n  return '';\n}\n\nlet message = extractMetaMessage(err) || 'Ошибка публикации в Instagram';\n\nif (\n  err?.details?.body?.error?.code === 9007 ||\n  /Media ID is not available/i.test(message) ||\n  /Медиаданные не готовы/i.test(message)\n) {\n  message = 'Медиаданные ещё не готовы к публикации. Попробуйте ещё раз через несколько секунд.';\n}\n\nreturn [{\n  json: {\n    success: false,\n    error_message: message\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        3728,
-        -80
+        5440,
+        -64
       ],
       "id": "94e7f4b0-7787-4066-94d0-cbffd0e230de",
       "name": "[Logic] Return Error"
@@ -1049,21 +1049,21 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        624,
-        64
+        528,
+        -112
       ],
       "id": "4b34bd22-4c76-4720-ac8a-e4447ead2450",
       "name": "[DB] Загрузить черновик карусели"
     },
     {
       "parameters": {
-        "jsCode": "const inputItems = $input.all();\nif (!inputItems.length) return [];\n\nconst item = inputItems[0].json;\nconst slides = item.draft_data?.items || [];\n\nreturn slides.map((slide, index) => ({\n  json: {\n    file_id: slide.file_id,\n    type: slide.type,\n    slide_index: index + 1,\n    total_slides: slides.length\n  }\n}));"
+        "jsCode": "const draftDataItems = $('[DB] Загрузить контекст и токен').all();\nif (!draftDataItems.length) return [];\n\nconst draft = draftDataItems[0].json;\nconst slides = draft.items || draft.draft_data?.items || [];\n\n// Извлекаем message_id созданного сервисного статуса\nconst startStatus = $('[TG] Статус: Старт сборки').first()?.json;\nconst statusMessageId = startStatus?.message_id || startStatus?.result?.message_id;\n\nreturn slides.map((slide, index) => ({\n  json: {\n    file_id: slide.file_id,\n    type: slide.type,\n    slide_index: index + 1,\n    total_slides: slides.length,\n    chat_id: draft.chat_id,\n    access_token: draft.access_token,\n    platform_user_id: draft.platform_user_id,\n    caption: draft.caption || '',\n    status_message_id: statusMessageId\n  }\n}));"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        816,
-        64
+        976,
+        -112
       ],
       "id": "2e05fa27-3056-462c-b75b-d77d2dad4551",
       "name": "[Logic] Развернуть слайды"
@@ -1080,161 +1080,203 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "timeout": 60000
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        992,
-        64
+        1200,
+        144
       ],
       "id": "55254b3b-fddb-4fe1-bca7-5f4a7c331ab7",
-      "name": "[TG] Get File Path (Slide)"
+      "name": "[TG] Get File Path (Slide)",
+      "onError": "continueErrorOutput"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить черновик карусели').item.json.platform_user_id }}/media",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Logic] Развернуть слайды').item.json.platform_user_id }}/media",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+              "value": "=Bearer {{ $('[Logic] Развернуть слайды').item.json.access_token }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={{\n  $('[Logic] Развернуть слайды').item.json.type === 'video' ? {\n    \"media_type\": \"VIDEO\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path,\n    \"is_carousel_item\": true\n  } : {\n    \"image_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path,\n    \"is_carousel_item\": true\n  }\n}}",
-        "options": {}
+        "options": {
+          "timeout": 60000
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1152,
-        64
+        1408,
+        128
       ],
       "id": "64a77666-0e9c-428e-b794-f3eff9697ebc",
       "name": "[Meta] Init Child Container",
-      "onError": "continueErrorOutput"
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить черновик карусели').item.json.platform_user_id }}/media",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить контекст и токен').all()[0].json.platform_user_id }}/media",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').all()[0].json.access_token }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{\n  {\n    \"media_type\": \"CAROUSEL\",\n    \"children\": $json.children,\n    \"caption\": $('[DB] Загрузить черновик карусели').item.json.draft_data?.caption || \"\"\n  }\n}}",
-        "options": {}
+        "jsonBody": "={{\n  {\n    \"media_type\": \"CAROUSEL\",\n    \"children\": $json.children,\n    \"caption\": $('[DB] Загрузить контекст и токен').all()[0].json.caption || ''\n  }\n}}",
+        "options": {
+          "timeout": 60000
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        1648,
-        64
+        2864,
+        16
       ],
       "id": "1b1af235-de22-4761-b922-2512e82e3950",
       "name": "[Meta] Init Parent Carousel",
-      "retryOnFail": true,
+      "retryOnFail": false,
       "waitBetweenTries": 5000,
       "onError": "continueErrorOutput"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить черновик карусели').item.json.platform_user_id }}/media_publish",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить контекст и токен').all()[0].json.platform_user_id }}/media_publish",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
             {
               "name": "Authorization",
-              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').all()[0].json.access_token }}"
             }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"creation_id\": \"{{ $json.id }}\"\n}",
-        "options": {}
+        "jsonBody": "={{\n  {\n    \"creation_id\": $('[Meta] Init Parent Carousel').all()[0].json.id\n  }\n}}",
+        "options": {
+          "timeout": 60000
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.5,
       "position": [
-        2000,
-        64
+        3280,
+        -48
       ],
       "id": "265dd57a-6034-4252-9f20-c3f845efafb0",
       "name": "[Meta] Publish Carousel",
       "retryOnFail": true,
-      "waitBetweenTries": 3000,
+      "waitBetweenTries": 5000,
+      "maxTries": 5,
       "onError": "continueErrorOutput"
     },
     {
-      "parameters": {},
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "messageId": "={{ $('[TG] Статус: Старт сборки').item.json.result.message_id }}",
+        "text": "=⚙️ Идёт обработка и кодирование карусели на серверах Meta...\nПожалуйста, подождите {{ ['⏳', '⌛', '🔄', '⚙️'][$runIndex % 4] }} (проверка {{ $runIndex + 1 }})",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2800,
+        256
+      ],
+      "id": "9361237e-dfc5-4d3a-b5af-cd18d4bc1a82",
+      "name": "[TG] Статус: Обработка видео",
+      "webhookId": "7bd56c0e-5275-4280-a321-27ef3682dd66",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "text": "⏳ Начинаем подготовку публикации карусели...\nЗагружаем медиафайлы в Meta. Пожалуйста, подождите ⌛",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        752,
+        -112
+      ],
+      "id": "ff4ea0e9-b247-47ed-b0dc-27e8cc731a26",
+      "name": "[TG] Статус: Старт сборки",
+      "webhookId": "06896ab0-cc9c-4876-a6a5-26c5358c9f19",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "messageId": "={{ $('[TG] Статус: Старт сборки').item.json.result.message_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        3520,
+        -80
+      ],
+      "id": "8e3b26f5-e375-4fff-85dd-741645168eb1",
+      "name": "[TG] Удалить статус карусели",
+      "webhookId": "de11445a-fb79-4f06-81b9-5a06830b9253",
+      "retryOnFail": false,
+      "alwaysOutputData": false,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "amount": 6
+      },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1296,
-        64
+        2080,
+        144
       ],
-      "id": "78eaed46-489e-4aea-8270-a505c49820a8",
-      "name": "[System] Пауза проверки слайдов",
+      "id": "b4a7a6ad-aead-499c-ac28-d4ddfde9879a",
+      "name": "[System] Пауза проверки карусели",
       "webhookId": "5f3577f1-1c6c-4ab9-b9db-1e10e1072c52"
-    },
-    {
-      "parameters": {
-        "url": "=https://graph.instagram.com/v21.0/{{ $json.id }}",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "fields",
-              "value": "status_code"
-            }
-          ]
-        },
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "Authorization",
-              "value": "=Bearer {{ $('[DB] Загрузить черновик карусели').item.json.access_token }}"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.5,
-      "position": [
-        1472,
-        64
-      ],
-      "id": "25043ae0-fb48-4f2b-9b63-0362e84d935d",
-      "name": "[Meta] Проверить статус слайдов"
-    },
-    {
-      "parameters": {
-        "jsCode": "const items = $input.all();\n\n// Фотографии готовы сразу (status_code отсутствует), видео требует FINISHED\nconst allFinished = items.every(item => \n  item.json.status_code === 'FINISHED' || !item.json.status_code\n);\nconst hasError = items.some(item => item.json.status_code === 'ERROR');\nconst finishedCount = items.filter(item => \n  item.json.status_code === 'FINISHED' || !item.json.status_code\n).length;\n\nreturn [{\n  json: {\n    status: hasError ? 'ERROR' : (allFinished ? 'FINISHED' : 'IN_PROGRESS'),\n    allFinished: allFinished,\n    finishedCount: finishedCount,\n    totalCount: items.length,\n    children: items.map(item => item.json.id).join(','),\n    childIds: items.map(item => item.json.id)\n  }\n}];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1744,
-        288
-      ],
-      "id": "9a93d450-4e53-4527-bbcc-933d1e79d8de",
-      "name": "[Logic] Анализ готовности слайдов"
     },
     {
       "parameters": {
@@ -1257,13 +1299,13 @@
                       "operation": "true",
                       "singleValue": true
                     },
-                    "id": "a49636ab-35c5-4b8b-a706-bf200a0c4ffa"
+                    "id": "e2531c26-9b62-42cd-a7c9-340035e5506c"
                   }
                 ],
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "All Slides Ready"
+              "outputKey": "Ready"
             },
             {
               "conditions": {
@@ -1275,8 +1317,8 @@
                 },
                 "conditions": [
                   {
-                    "id": "1ee4a754-ef06-4150-847b-20159c675be5",
-                    "leftValue": "={{ $json.status === 'IN_PROGRESS' && $runIndex < 25 }}",
+                    "id": "b1a1df4d-aeb6-4c39-9a1a-62c32988634e",
+                    "leftValue": "={{ $json.status === 'IN_PROGRESS' && $json.attempt < 30 }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -1288,7 +1330,7 @@
                 "combinator": "and"
               },
               "renameOutput": true,
-              "outputKey": "Encoding in Progress"
+              "outputKey": "In Progress"
             },
             {
               "conditions": {
@@ -1300,8 +1342,8 @@
                 },
                 "conditions": [
                   {
-                    "id": "6dd4d6bc-4518-42d9-9eef-9e9da6780672",
-                    "leftValue": "={{ $json.status === 'ERROR' || $runIndex >= 25 }}",
+                    "id": "ce329bb8-0ce4-47a6-bfd2-a7a2e9cbba1e",
+                    "leftValue": "={{ $json.status === 'ERROR' || $json.attempt >= 30 }}",
                     "rightValue": "",
                     "operator": {
                       "type": "boolean",
@@ -1322,112 +1364,135 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        1968,
-        288
+        2640,
+        64
       ],
-      "id": "fc844ec5-5f6d-46df-95ab-055e3a2efc5d",
-      "name": "[Logic] Готовность слайдов"
+      "id": "916a65a1-47ba-4336-8852-f4ffc7d8ff4c",
+      "name": "[Logic] Готовность карусели"
     },
     {
       "parameters": {
-        "operation": "editMessageText",
-        "chatId": "={{ $('[DB] Загрузить черновик карусели').item.json.chat_id }}",
-        "messageId": "={{ $('[TG] Статус: Старт сборки').item.json.message_id || $('[TG] Статус: Старт сборки').item.json.result.message_id }}",
-        "text": "=⚙️ Идёт кодирование медиафайлов на серверах Meta...\nГотово: {{ $json.finishedCount }} из {{ $json.totalCount }} слайдов {{ ['⏳', '⌛', '🔄', '⚙️'][$runIndex % 4] }} (проверка {{ $runIndex + 1 }})",
-        "additionalFields": {}
-      },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
-      "position": [
-        2272,
-        224
-      ],
-      "id": "9361237e-dfc5-4d3a-b5af-cd18d4bc1a82",
-      "name": "[TG] Статус: Обработка видео",
-      "webhookId": "7bd56c0e-5275-4280-a321-27ef3682dd66",
-      "credentials": {
-        "telegramApi": {
-          "id": "sLY97LbuJGe6Ytey",
-          "name": "Telegram account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "jsCode": "const items = $input.all();\nif (!items.length) return [];\n\nconst ids = items[0].json.childIds || [];\nreturn ids.map(id => ({ json: { id } }));"
+        "jsCode": "const items = $input.all();\n\nif (!items.length) {\n  return [];\n}\n\nconst hasError = items.some(item =>\n  item.json.status_code === 'ERROR'\n);\n\nconst allFinished = items.every(item =>\n  item.json.status_code === 'FINISHED' || !item.json.status_code\n);\n\nconst childIds = items\n  .map(item => item.json.id)\n  .filter(Boolean);\n\nconst access_token = $('[DB] Загрузить контекст и токен').all()[0]?.json?.access_token;\nconst statusMessageId = items[0]?.json?.status_message_id;\n\nreturn [{\n  json: {\n    status: hasError\n      ? 'ERROR'\n      : allFinished\n        ? 'FINISHED'\n        : 'IN_PROGRESS',\n    children: childIds.join(','),\n    childIds,\n    access_token,\n    status_message_id: statusMessageId,\n    attempt: ($runIndex || 0) + 1,\n    finishedCount: items.filter(item =>\n      item.json.status_code === 'FINISHED' || !item.json.status_code\n    ).length,\n    totalCount: items.length\n  }\n}];"
       },
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        2272,
-        384
+        2416,
+        80
       ],
-      "id": "e7b05c79-3130-481b-b73b-9b76f48a361f",
+      "id": "0a0dce20-2fc1-495a-843d-4ea4e799be07",
+      "name": "[Logic] Анализ готовности слайдов"
+    },
+    {
+      "parameters": {
+        "jsCode": "const analysis = $('[Logic] Анализ готовности слайдов').first()?.json || {};\nconst ids = analysis.childIds || [];\nconst access_token = analysis.access_token || $('[DB] Загрузить контекст и токен').first().json.access_token;\nconst statusMessageId = analysis.status_message_id;\n\nreturn ids.map(id => ({\n  json: {\n    id,\n    access_token,\n    status_message_id: statusMessageId\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        3024,
+        256
+      ],
+      "id": "36c54866-86bd-499a-b749-e551bf69b410",
       "name": "[Logic] Развернуть ID для повторной проверки"
     },
     {
       "parameters": {
-        "amount": 3
+        "url": "=https://graph.instagram.com/v21.0/{{ $json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $json.access_token || $('[DB] Загрузить контекст и токен').all()[0].json.access_token }}"
+            }
+          ]
+        },
+        "options": {
+          "timeout": 15000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        2224,
+        96
+      ],
+      "id": "115218bf-5809-47d2-b0b4-5a61f048fbe0",
+      "name": "[Meta] Проверить статус слайдов",
+      "retryOnFail": false,
+      "waitBetweenTries": 2000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "amount": 10
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        1824,
-        64
+        3040,
+        -80
       ],
-      "id": "b4a7a6ad-aead-499c-ac28-d4ddfde9879a",
+      "id": "0c5af04c-3bf5-40aa-8825-68243aa38c5c",
       "name": "[System] Пауза перед релизом",
-      "webhookId": "5f3577f1-1c6c-4ab9-b9db-1e10e1072c52"
+      "webhookId": "2182ef9b-b866-41e5-99c4-28ec01a0846c"
     },
     {
       "parameters": {
-        "operation": "editMessageText",
-        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
-        "messageId": "={{ $('[DB] Загрузить черновик карусели').item.json.draft_data?.dashboard_message_id || $('[DB] Загрузить черновик карусели').item.json.message_id }}",
-        "text": "⏳ Начинаем подготовку публикации карусели...\nЗагружаем медиафайлы в Meta. Пожалуйста, подождите ⌛",
-        "additionalFields": {}
+        "jsCode": "const items = $input.all();\n\nconst validSlides = [];\nconst rejectedSlides = [];\n\nitems.forEach((item, index) => {\n  // Проверяем наличие ошибки от Meta или отсутствие ID контейнера\n  if (item.json.error || !item.json.id) {\n    const errorMsg =\n      item.json.details?.body?.error?.error_user_msg ||\n      item.json.details?.body?.error?.message ||\n      item.json.error?.message ||\n      'Неподдерживаемые пропорции или формат файла';\n\n    rejectedSlides.push({\n      slide_index: index + 1,\n      error: errorMsg\n    });\n  } else {\n    validSlides.push({\n      id: item.json.id,\n      slide_index: index + 1\n    });\n  }\n});\n\n// Проверка минимального контракта Meta для каруселей (минимум 2 слайда)\nif (validSlides.length < 2) {\n  const reasons = rejectedSlides.map(s => `Слайд #${s.slide_index}: ${s.error}`).join('; ');\n  return [{\n    json: {\n      is_fatal_error: true,\n      error_message: `Не удалось создать карусель: успешно создано слайдов — ${validSlides.length} (требуется минимум 2). Причины отклонения: ${reasons}`\n    }\n  }];\n}\n\n// Формируем текст предупреждения, если часть файлов была отсеяна\nlet warningText = null;\nif (rejectedSlides.length > 0) {\n  const rejectedIndexes = rejectedSlides.map(s => `#${s.slide_index}`).join(', ');\n  warningText = `Серверы Meta отклонили ${rejectedSlides.length} файл(а) из-за неверных пропорций (слайды: ${rejectedIndexes}). Опубликованы только прошедшие проверку слайды (${validSlides.length} шт.).`;\n}\n\n// Пропускаем дальше только валидные контейнеры для опроса статуса\nreturn validSlides.map(slide => ({\n  json: {\n    id: slide.id,\n    slide_index: slide.slide_index,\n    warning: warningText\n  }\n}));"
       },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
       "position": [
-        816,
-        304
+        1632,
+        128
       ],
-      "id": "ff4ea0e9-b247-47ed-b0dc-27e8cc731a26",
-      "name": "[TG] Статус: Старт сборки",
-      "webhookId": "06896ab0-cc9c-4876-a6a5-26c5358c9f19",
-      "credentials": {
-        "telegramApi": {
-          "id": "sLY97LbuJGe6Ytey",
-          "name": "Telegram account"
-        }
-      },
-      "onError": "continueRegularOutput"
+      "id": "fab51d2a-0d03-48af-9335-00900ef87dbe",
+      "name": "[Logic] Валидация слайдов карусели"
     },
     {
       "parameters": {
-        "operation": "deleteMessage",
-        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
-        "messageId": "={{ $('[TG] Статус: Старт сборки').item.json.message_id || $('[TG] Статус: Старт сборки').item.json.result.message_id }}"
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "321e2b8c-2b12-42a7-ab24-744d7b7c807b",
+              "leftValue": "={{ $json.is_fatal_error }}",
+              "rightValue": "",
+              "operator": {
+                "type": "boolean",
+                "operation": "true",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
       },
-      "type": "n8n-nodes-base.telegram",
-      "typeVersion": 1.2,
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
       "position": [
-        2272,
-        16
+        1824,
+        80
       ],
-      "id": "8e3b26f5-e375-4fff-85dd-741645168eb1",
-      "name": "[TG] Удалить статус карусели",
-      "webhookId": "de11445a-fb79-4f06-81b9-5a06830b9253",
-      "retryOnFail": false,
-      "alwaysOutputData": false,
-      "credentials": {
-        "telegramApi": {
-          "id": "sLY97LbuJGe6Ytey",
-          "name": "Telegram account"
-        }
-      },
-      "onError": "continueRegularOutput"
+      "id": "e350caea-b33e-46d6-a0a9-ba8fdac3f2db",
+      "name": "[Logic] Хватает слайдов?"
     }
   ],
   "pinData": {},
@@ -1874,11 +1939,6 @@
             "node": "[TG] Get File Path (Slide)",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "[TG] Статус: Старт сборки",
-            "type": "main",
-            "index": 0
           }
         ]
       ]
@@ -1891,17 +1951,6 @@
             "type": "main",
             "index": 0
           }
-        ]
-      ]
-    },
-    "[Meta] Init Child Container": {
-      "main": [
-        [
-          {
-            "node": "[System] Пауза проверки слайдов",
-            "type": "main",
-            "index": 0
-          }
         ],
         [
           {
@@ -1910,6 +1959,18 @@
             "index": 0
           }
         ]
+      ]
+    },
+    "[Meta] Init Child Container": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Валидация слайдов карусели",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
       ]
     },
     "[Meta] Init Parent Carousel": {
@@ -1930,96 +1991,11 @@
         ]
       ]
     },
-    "[System] Пауза проверки слайдов": {
-      "main": [
-        [
-          {
-            "node": "[Meta] Проверить статус слайдов",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "[Meta] Проверить статус слайдов": {
-      "main": [
-        [
-          {
-            "node": "[Logic] Анализ готовности слайдов",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "[Logic] Анализ готовности слайдов": {
-      "main": [
-        [
-          {
-            "node": "[Logic] Готовность слайдов",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "[Logic] Готовность слайдов": {
-      "main": [
-        [
-          {
-            "node": "[Meta] Init Parent Carousel",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "[TG] Статус: Обработка видео",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "[Logic] Развернуть ID для повторной проверки",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "[Logic] Return Error",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "[Logic] Развернуть ID для повторной проверки": {
-      "main": [
-        [
-          {
-            "node": "[System] Пауза проверки слайдов",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "[System] Пауза перед релизом": {
-      "main": [
-        [
-          {
-            "node": "[Meta] Publish Carousel",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "[DB] Загрузить черновик карусели": {
       "main": [
         [
           {
-            "node": "[Logic] Развернуть слайды",
+            "node": "[TG] Статус: Старт сборки",
             "type": "main",
             "index": 0
           }
@@ -2054,14 +2030,156 @@
           }
         ]
       ]
+    },
+    "[TG] Статус: Старт сборки": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Развернуть слайды",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза проверки карусели": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Проверить статус слайдов",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Готовность карусели": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Init Parent Carousel",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Статус: Обработка видео",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Return Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Статус: Обработка видео": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Развернуть ID для повторной проверки",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Анализ готовности слайдов": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Готовность карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Развернуть ID для повторной проверки": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза проверки карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Проверить статус слайдов": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Анализ готовности слайдов",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Return Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза перед релизом": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Publish Carousel",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Валидация слайдов карусели": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Хватает слайдов?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Хватает слайдов?": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Return Error",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[System] Пауза проверки карусели",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner",
+    "executionTimeout": 600,
+    "availableInMCP": false
   },
-  "versionId": "3c19df38-88ba-4eec-97b0-a73b1922ac5c",
+  "versionId": "afb11ac3-7517-4695-a965-ea073c424f8a",
   "meta": {
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
   },
