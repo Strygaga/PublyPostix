@@ -1,0 +1,658 @@
+{
+  "name": "[Adapter] Instagram Publisher",
+  "nodes": [
+    {
+      "parameters": {
+        "inputSource": "passthrough"
+      },
+      "type": "n8n-nodes-base.executeWorkflowTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        0,
+        0
+      ],
+      "id": "1f822f8b-0460-41cb-9fcf-f56681835ae5",
+      "name": "When Executed by Another Workflow"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.format }}",
+                    "rightValue": "reels",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "dfe84603-fa88-4fe2-b23f-65b921952652"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Reels"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "6a3e4606-13b9-4c0c-b941-72318f8367aa",
+                    "leftValue": "={{ $json.format }}",
+                    "rightValue": "feed_post",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Feed Post"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "63ef3e79-6277-4e75-a997-c5febd533bac",
+                    "leftValue": "={{ $json.format }}",
+                    "rightValue": "carousel",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Carousel"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "187ec32a-3945-421a-898a-7541a6db18d2",
+                    "leftValue": "={{ $json.format }}",
+                    "rightValue": "stories",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Stories"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        192,
+        -32
+      ],
+      "id": "31c2ab2b-51f9-475a-b3d5-0e2985d9cdd9",
+      "name": "[Logic] Роутер форматов"
+    },
+    {
+      "parameters": {
+        "url": "=https://api.telegram.org/bot{{ $env.TELEGRAM_BOT_TOKEN }}/getFile",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "file_id",
+              "value": "={{ $('[DB] Загрузить контекст и токен').item.json.file_id }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        592,
+        928
+      ],
+      "id": "f6c54899-5d0f-4efe-9176-7b12f97170ad",
+      "name": "[TG] Get File Path (Stories)"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить контекст и токен').item.json.platform_user_id }}/media",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{\n  $('[DB] Загрузить контекст и токен').item.json.incoming_type === 'video' ? {\n    \"media_type\": \"STORIES\",\n    \"video_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path\n  } : {\n    \"media_type\": \"STORIES\",\n    \"image_url\": \"https://api.telegram.org/file/bot\" + $env.TELEGRAM_BOT_TOKEN + \"/\" + $json.result.file_path\n  }\n}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        768,
+        928
+      ],
+      "id": "6dd6a426-f410-4500-86b0-15fde711cef9",
+      "name": "[Meta] Init Story",
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "text": "⏳ Материал отправлен в Meta. Начинаем подготовку Stories...",
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        928,
+        928
+      ],
+      "id": "7993f3c5-8962-4b60-bc4b-cbd176596845",
+      "name": "[TG] Статус: Обработка Stories",
+      "webhookId": "b03ea923-b3f1-4e46-8679-54f7db8fadd7",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        1104,
+        928
+      ],
+      "id": "9c2d2f8c-3458-4417-bf82-e17f49c7e57d",
+      "name": "[System] Пауза проверки Stories",
+      "webhookId": "5950d48b-ce80-4cc4-b385-8bc6c821f560"
+    },
+    {
+      "parameters": {
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[Meta] Init Story').item.json.id }}",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "fields",
+              "value": "status_code"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').item.json.access_token }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1264,
+        928
+      ],
+      "id": "6fb14b06-7c0a-434c-9716-3d1baedce85f",
+      "name": "[Meta] Проверить статус Stories"
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.status_code === 'FINISHED' || !$json.status_code }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    },
+                    "id": "18a1a028-0837-4c18-b520-9a429fd98d06"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Ready"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "c90522f3-0c4b-44ee-b885-30d925e30fb4",
+                    "leftValue": "={{ $json.status_code === 'IN_PROGRESS' && $runIndex < 12 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "In Progress"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "e9209307-c260-4dab-b623-95b682118619",
+                    "leftValue": "={{ $json.status_code === 'ERROR' || $runIndex >= 12 }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "boolean",
+                      "operation": "true",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Error or Timeout"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        912
+      ],
+      "id": "aefd8f3c-66cc-48e0-b385-05964f787a26",
+      "name": "[Logic] Готовность Stories"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "messageId": "={{ $('[TG] Статус: Обработка Stories').item.json.message_id || $('[TG] Статус: Обработка Stories').item.json.result.message_id }}",
+        "text": "=⚙️ Обработка Stories на серверах Meta... Пожалуйста, подождите {{ ['⏳', '⌛', '🔄', '⚙️'][$runIndex % 4] }} (проверка {{ $runIndex + 1 }})",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1648,
+        1088
+      ],
+      "id": "ffeb72a6-1428-4f58-b035-d803c36cdf18",
+      "name": "[TG] Обновить статус Stories",
+      "webhookId": "1c62fa87-45fc-4c9a-8ff8-8aa4f584aaac",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "=https://graph.instagram.com/v21.0/{{ $('[DB] Загрузить контекст и токен').item.json.platform_user_id }}/media_publish",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "=Bearer {{ $('[DB] Загрузить контекст и токен').item.json.access_token }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"creation_id\": \"{{ $('[Meta] Init Story').item.json.id }}\" }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1792,
+        896
+      ],
+      "id": "70f62b2b-7c63-426c-9e04-99ce0724d387",
+      "name": "[Meta] Publish Story",
+      "retryOnFail": true,
+      "waitBetweenTries": 3000,
+      "onError": "continueErrorOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const payload = item.json;\n  const firstMedia = payload.items?.[0] || {};\n\n  return {\n    json: {\n      chat_id: payload.chat_id,\n      internal_platform_id: payload.internal_platform_id,\n      platform_user_id: payload.platform_user_id,\n      access_token: payload.access_token,\n      file_id: firstMedia.file_id || payload.file_id,\n      incoming_type: firstMedia.type || payload.incoming_type || 'photo',\n      caption: payload.caption || '',\n      draft_data: {\n        target_platform: 'instagram',\n        target_format: payload.format || 'stories'\n      }\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        416,
+        928
+      ],
+      "id": "cb9f1930-e094-44ca-a219-02e015092f21",
+      "name": "[DB] Загрузить контекст и токен"
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $('[DB] Загрузить контекст и токен').item.json.chat_id }}",
+        "messageId": "={{ $('[TG] Статус: Обработка Stories').item.json.message_id || $('[TG] Статус: Обработка Stories').item.json.result.message_id }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        2000,
+        880
+      ],
+      "id": "5741c49d-d7b2-4027-b5f4-a467fbea18b0",
+      "name": "[TG] Удалить статус Stories",
+      "webhookId": "592a7682-92de-4e21-8a72-1fd49ef92bb3",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => ({\n  json: {\n    success: true,\n    platform_post_id: $('[Meta] Publish Story').item.json.id\n  }\n}));"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2208,
+        880
+      ],
+      "id": "bff3991a-7b0b-4148-8f3b-596097adb361",
+      "name": "[Logic] Return Success"
+    },
+    {
+      "parameters": {
+        "jsCode": "return $input.all().map(item => {\n  const err = item.json;\n  let message = 'Ошибка публикации Stories в Instagram';\n\n  if (err.error?.message) {\n    message = err.error.message;\n  } else if (err.errorMessage) {\n    message = err.errorMessage;\n  } else if (err.status_code === 'ERROR') {\n    message = 'Серверы Meta отклонили медиафайл (проверьте пропорции 9:16 и битрейт)';\n  } else if (err.status_code === 'IN_PROGRESS') {\n    message = 'Превышено время ожидания кодирования видео на серверах Meta';\n  }\n\n  return {\n    json: {\n      success: false,\n      error_message: message\n    }\n  };\n});"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        2032,
+        1216
+      ],
+      "id": "94e7f4b0-7787-4066-94d0-cbffd0e230de",
+      "name": "[Logic] Return Error"
+    }
+  ],
+  "pinData": {
+    "When Executed by Another Workflow": [
+      {
+        "json": {
+          "chat_id": 410523399,
+          "format": "stories",
+          "platform_user_id": "28310337318621376",
+          "access_token": "IGAAbTIllgGoZABZAGJtdlI5VVFyVjI5R09FQ1ZAqbjZA5ZA3dEMkxiYlJVT0duWjJZAeC1QQWxkdWd3cnB0MFRuemxDNWw0ZADRxWEUtQW1xem9YVjVnMjMtUlNzeU1CREpWVEdnbHA0V2MxMVFrU2RWSVdOTEZAR",
+          "caption": "Тестовая публикация через саб-воркфлоу",
+          "items": [
+            {
+              "index": 1,
+              "type": "photo",
+              "file_id": "AgACAgIAAxkBAAIBo2q1gx16cbZa-c7C42rd5Bzgar91AAIgHGsbjKmwSbKvtc3O8bNwAQADAgADeQADPQQ"
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "connections": {
+    "When Executed by Another Workflow": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Роутер форматов",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Get File Path (Stories)": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Init Story",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Init Story": {
+      "main": [
+        [
+          {
+            "node": "[TG] Статус: Обработка Stories",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Return Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Статус: Обработка Stories": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза проверки Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[System] Пауза проверки Stories": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Проверить статус Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Проверить статус Stories": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Готовность Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Готовность Stories": {
+      "main": [
+        [
+          {
+            "node": "[Meta] Publish Story",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[TG] Обновить статус Stories",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Return Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Обновить статус Stories": {
+      "main": [
+        [
+          {
+            "node": "[System] Пауза проверки Stories",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Роутер форматов": {
+      "main": [
+        [],
+        [],
+        [],
+        [
+          {
+            "node": "[DB] Загрузить контекст и токен",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Загрузить контекст и токен": {
+      "main": [
+        [
+          {
+            "node": "[TG] Get File Path (Stories)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Meta] Publish Story": {
+      "main": [
+        [
+          {
+            "node": "[TG] Удалить статус Stories",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Return Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[TG] Удалить статус Stories": {
+      "main": [
+        [
+          {
+            "node": "[Logic] Return Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "10642b6d-9b14-4fee-9a44-313390c765b7",
+  "meta": {
+    "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
+  },
+  "nodeGroups": [],
+  "id": "pgVo4wOJYqoPjAj5",
+  "tags": []
+}
