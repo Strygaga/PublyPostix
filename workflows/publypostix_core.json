@@ -477,8 +477,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        224,
-        960
+        416,
+        1008
       ],
       "id": "f689b175-e790-4ae4-bfdc-d3c9cb81fdff",
       "name": "[TG] Экран: Онбординг Instagram",
@@ -839,8 +839,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        -528,
-        1808
+        -672,
+        2304
       ],
       "id": "35697cc2-ea5b-431a-a713-92a4cdcd95d4",
       "name": "[DB] Загрузить контекст и токен",
@@ -1008,8 +1008,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -304,
-        1760
+        -448,
+        2256
       ],
       "id": "99d54f06-965e-46ff-8cd4-b1b3bc48a7e2",
       "name": "[Logic] Роутер медиа"
@@ -1054,8 +1054,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1712,
-        1552
+        1568,
+        2048
       ],
       "id": "ea9b2636-5d6c-4e2a-a827-6e634e927971",
       "name": "[TG] Ошибка публикации",
@@ -1078,8 +1078,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1952,
-        1424
+        1808,
+        1920
       ],
       "id": "15044ba5-c9d7-4955-9d37-219f03b39f8d",
       "name": "[DB] Сброс состояния (IDLE)",
@@ -1295,8 +1295,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        0,
-        1648
+        -160,
+        2112
       ],
       "id": "5ffe0373-06a3-4704-aeaa-b51cae27ca76",
       "name": "[TG] Ошибка формата контента",
@@ -1641,8 +1641,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        592,
-        2096
+        544,
+        2384
       ],
       "id": "3e00ef21-d2c8-4e2d-8d22-532e313399fd",
       "name": "[DB] Накопить элемент карусели",
@@ -1693,8 +1693,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1488,
-        2080
+        1440,
+        2368
       ],
       "id": "f46c781e-caed-45bd-b23e-b8a0192fa43b",
       "name": "[TG] Экран: Сборка карусели",
@@ -1715,8 +1715,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1344,
-        2080
+        1296,
+        2368
       ],
       "id": "4b83b7c4-92dd-4678-9b61-cc8d90becd98",
       "name": "[TG] Удалить предыдущую карточку",
@@ -1739,8 +1739,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1648,
-        2080
+        1600,
+        2368
       ],
       "id": "c29e627d-b203-436a-a8ee-10f2acda8e35",
       "name": "[DB] Зафиксировать message_id карточки",
@@ -1786,8 +1786,8 @@
       "type": "n8n-nodes-base.switch",
       "typeVersion": 3.4,
       "position": [
-        -64,
-        2112
+        -208,
+        2608
       ],
       "id": "187bb2f9-b5b1-456c-9a43-9ab7fbcb68bc",
       "name": "[Logic] Диспетчер платформ"
@@ -1903,7 +1903,7 @@
       "typeVersion": 3.4,
       "position": [
         208,
-        1968
+        2176
       ],
       "id": "aa856334-67cc-433a-80b7-ae3a4176128f",
       "name": "[Logic] Диспетчер форматов (Instagram)"
@@ -1917,8 +1917,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        224,
-        1152
+        80,
+        1648
       ],
       "id": "a1a42705-63b3-4d63-b884-bc89989251b5",
       "name": "[DB] Загрузить черновик карусели",
@@ -1956,8 +1956,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        416,
-        1152
+        272,
+        1648
       ],
       "id": "fc8ace11-3d40-4543-8cb5-686a6fac69d5",
       "name": "[Logic] Guard: Карусель готова?"
@@ -1969,8 +1969,8 @@
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        768,
-        2096
+        720,
+        2384
       ],
       "id": "d715a0e1-2d2e-4cf3-a55a-c32ffafc0dc9",
       "name": "[System] Буфер пачки медиа",
@@ -1985,8 +1985,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        944,
-        2096
+        896,
+        2384
       ],
       "id": "bff0f2f7-bd6d-4e0f-aec6-9e1cabccabde",
       "name": "[DB] Актуализировать счетчик карусели",
@@ -2024,8 +2024,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1120,
-        2096
+        1072,
+        2384
       ],
       "id": "e2b87c25-01e9-4633-a390-2a46ba60f738",
       "name": "[Logic] Guard: Последний элемент пачки?"
@@ -2070,8 +2070,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        -32,
-        1840
+        -160,
+        2288
       ],
       "id": "4b404ba0-1550-406b-9bdf-c8de442c8c9c",
       "name": "[TG] Экран: Сначала выберите платформу",
@@ -2131,8 +2131,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        784,
-        1712
+        672,
+        2048
       ],
       "id": "84b06e10-6bf2-487a-9db3-35351a0b2ae8",
       "name": "[Logic] Подготовить контракт (Single)"
@@ -2146,8 +2146,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        624,
-        1344
+        480,
+        1840
       ],
       "id": "f8a5b378-fbf9-481c-8f88-c32e4b583d5c",
       "name": "[TG] Удалить дашборд карусели",
@@ -2167,8 +2167,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        672,
-        1136
+        544,
+        1632
       ],
       "id": "b69e2abd-6a10-4de3-8179-58f34dbb2cf6",
       "name": "[Logic] Подготовить контракт (Carousel)"
@@ -2195,8 +2195,8 @@
       "type": "n8n-nodes-base.executeWorkflow",
       "typeVersion": 1.3,
       "position": [
-        992,
-        1344
+        848,
+        1840
       ],
       "id": "30c8a881-1338-4c52-a971-4ed13153e3f4",
       "name": "[Sub-workflow] Вызов Instagram Publisher"
@@ -2229,8 +2229,8 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 2.3,
       "position": [
-        1216,
-        1344
+        1072,
+        1840
       ],
       "id": "337c4411-9da5-4e90-8de0-0ac21ff0f752",
       "name": "[Logic] Guard: Публикация успешна?"
@@ -2244,8 +2244,8 @@
       "type": "n8n-nodes-base.postgres",
       "typeVersion": 2.7,
       "position": [
-        1520,
-        1328
+        1376,
+        1824
       ],
       "id": "8f78d26f-1711-44d5-b954-688cb662f450",
       "name": "[DB] Сохранить публикацию (Универсальный)",
@@ -2284,8 +2284,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        1712,
-        1328
+        1568,
+        1824
       ],
       "id": "e7712f37-5579-431f-9627-511aaef943df",
       "name": "[TG] Success Alert (Универсальный)",
@@ -2294,6 +2294,361 @@
         "telegramApi": {
           "id": "sLY97LbuJGe6Ytey",
           "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.callback_query?.data }}",
+                    "rightValue": "connect:instagram",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "daebf852-e4f7-4329-9773-7ee3139bb1e5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Connect Instagram"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 3
+                },
+                "conditions": [
+                  {
+                    "id": "dde0e573-1dc2-4c73-a5df-5984e5101739",
+                    "leftValue": "={{ $json.callback_query?.data }}",
+                    "rightValue": "connect:vk",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Connect VK"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.4,
+      "position": [
+        144,
+        1088
+      ],
+      "id": "8989ec32-cb1b-4f31-bbd6-2ff076fd1e77",
+      "name": "[Logic] Роутер подключений"
+    },
+    {
+      "parameters": {
+        "operation": "editMessageText",
+        "chatId": "={{ $json.chat_id }}",
+        "messageId": "={{ $json.message_id }}",
+        "replyMarkup": "inlineKeyboard",
+        "text": "🔵 Подключение ВКонтакте\n\nДля публикации записей на стене, VK Клипов и Историй в ваши сообщества требуется выдать права приложению через официальный шлюз ВКонтакте.\n\nНажмите кнопку авторизации ниже:",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🔗 Авторизоваться через VK",
+                    "additionalFields": {
+                      "url": "=https://id.vk.com/authorize?client_id={{ $env.VK_CLIENT_ID }}&redirect_uri=https://engross-android-underfoot.ngrok-free.dev/webhook/oauth-vk-callback&response_type=code&scope=wall,photos,video,stories,groups,offline&v=5.199&state={{ $json.chat_id }}_{{ $json.message_id }}&code_challenge={{ $json.pkce_challenge }}&code_challenge_method=s256"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "◀️ Назад",
+                    "additionalFields": {
+                      "callback_data": "nav:connect_hub"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        896,
+        1264
+      ],
+      "id": "f9ea71cb-f693-4c2e-ade0-f4dead1ad169",
+      "name": "[TG] Экран: Онбординг VK",
+      "webhookId": "4f0e93f8-aa93-460e-9c2c-92b2ef6ed53a",
+      "notesInFlow": true,
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "notes": "Показывает пошаговую инструкцию по связке Instagram + FB и кнопку OAuth"
+    },
+    {
+      "parameters": {
+        "path": "oauth-vk-callback",
+        "options": {
+          "responseData": "Авторизация ВКонтакте прошла успешно! Вы можете закрыть эту вкладку и вернуться в Telegram-бот."
+        }
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2.1,
+      "position": [
+        -400,
+        3568
+      ],
+      "id": "4f702651-548f-49d8-9058-10b22d4f5482",
+      "name": "[Auth] Webhook VK OAuth",
+      "webhookId": "a6b18972-bfe7-4856-b912-961968d88eab"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://id.vk.com/oauth2/auth",
+        "sendBody": true,
+        "contentType": "form-urlencoded",
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "grant_type",
+              "value": "authorization_code"
+            },
+            {
+              "name": "client_id",
+              "value": "={{ $env.VK_CLIENT_ID }}"
+            },
+            {
+              "name": "redirect_uri",
+              "value": "https://engross-android-underfoot.ngrok-free.dev/webhook/oauth-vk-callback"
+            },
+            {
+              "name": "code",
+              "value": "={{ $json.code }}"
+            },
+            {
+              "name": "code_verifier",
+              "value": "={{ $json.code_verifier }}"
+            },
+            {
+              "name": "device_id",
+              "value": "={{ $json.device_id }}"
+            },
+            {
+              "name": "state",
+              "value": "={{ $json.state }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        -32,
+        3568
+      ],
+      "id": "56f49376-f816-418b-b592-d65da39a53c3",
+      "name": "[VK] Обмен code на Access Token"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "INSERT INTO connected_platforms (\n    user_id,\n    platform,\n    platform_user_id,\n    access_token,\n    refresh_token,\n    scopes,\n    expires_at,\n    status\n)\nVALUES (\n    {{ $('[Auth] Webhook VK OAuth').item.json.query.state.split('_')[0] }}::bigint,\n    'vk',\n    '{{ $json.user_id }}',\n    '{{ $json.access_token }}',\n    '{{ $json.refresh_token }}',\n    '[\"wall\", \"photos\", \"video\", \"stories\", \"groups\", \"offline\"]'::jsonb,\n    NOW() + make_interval(secs => {{ $json.expires_in }}::int),\n    'active'\n)\nON CONFLICT (user_id, platform, platform_user_id) DO UPDATE \nSET access_token = EXCLUDED.access_token,\n    refresh_token = EXCLUDED.refresh_token,\n    scopes = EXCLUDED.scopes,\n    expires_at = EXCLUDED.expires_at,\n    status = 'active',\n    updated_at = CURRENT_TIMESTAMP\nRETURNING id, platform, platform_user_id, status;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        144,
+        3568
+      ],
+      "id": "7961e89e-7d68-4892-9028-ec42aac0d2a6",
+      "name": "[DB] Save VK Token",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "deleteMessage",
+        "chatId": "={{ $('[Auth] Webhook VK OAuth').item.json.query.state.split('_')[0] }}",
+        "messageId": "={{ $('[Auth] Webhook VK OAuth').item.json.query.state.split('_')[1] }}"
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        3472
+      ],
+      "id": "e2bb76e0-7f2c-46ee-bf68-eb5395150aeb",
+      "name": "[TG] Удалить экран онбординга VK",
+      "webhookId": "5d0a7337-28df-4d7a-958e-aeb1d7ed74a3",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      },
+      "onError": "continueRegularOutput"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('[Auth] Webhook VK OAuth').item.json.query.state.split('_')[0] }}",
+        "text": "=🎉 ВКонтакте успешно подключен!\n\n👤 ID пользователя VK: {{ $json.platform_user_id }}\n✅ Разрешения на управление публикациями получены.",
+        "replyMarkup": "inlineKeyboard",
+        "inlineKeyboard": {
+          "rows": [
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "⚙️ Управление подключениями",
+                    "additionalFields": {
+                      "callback_data": "nav:connect_hub"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "row": {
+                "buttons": [
+                  {
+                    "text": "🏠 Главное меню",
+                    "additionalFields": {
+                      "callback_data": "nav:main"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "additionalFields": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        320,
+        3664
+      ],
+      "id": "f6b0b82f-8182-4ffb-b67f-169f90f5126e",
+      "name": "[TG] Экран: Успех авторизации VK",
+      "webhookId": "c460a0da-32b5-454d-b5da-deec74c8605c",
+      "credentials": {
+        "telegramApi": {
+          "id": "sLY97LbuJGe6Ytey",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';\nlet verifier = '';\nfor (let i = 0; i < 64; i++) {\n  verifier += chars[Math.floor(Math.random() * chars.length)];\n}\n\nreturn {\n  pkce_verifier: verifier,\n  chat_id: $json.callback_query.message.chat.id,\n  message_id: $json.callback_query.message.message_id\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        336,
+        1264
+      ],
+      "id": "1f72ff05-b924-4ca5-a20b-f955150983ca",
+      "name": "[Logic] Генератор PKCE (VK)"
+    },
+    {
+      "parameters": {
+        "value": "={{ $json.pkce_verifier }}",
+        "dataPropertyName": "pkce_challenge_raw",
+        "encoding": "base64"
+      },
+      "type": "n8n-nodes-base.crypto",
+      "typeVersion": 2,
+      "position": [
+        528,
+        1264
+      ],
+      "id": "a347e229-5909-4302-b92d-52b3543e1d16",
+      "name": "[Crypto] Хеширование SHA-256"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "UPDATE users \nSET draft_data = jsonb_set(\n    COALESCE(draft_data, '{}'::jsonb),\n    '{vk_code_verifier}',\n    to_jsonb('{{ $json.pkce_verifier }}'::text)\n),\nupdated_at = CURRENT_TIMESTAMP\nWHERE telegram_id = {{ $json.chat_id }}::bigint\nRETURNING \n    telegram_id AS chat_id,\n    {{ $json.message_id }}::bigint AS message_id,\n    '{{ $json.pkce_challenge_raw.replace(/\\+/g, \"-\").replace(/\\//g, \"_\").replace(/=+$/, \"\") }}' AS pkce_challenge;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        704,
+        1264
+      ],
+      "id": "77149049-b55f-4ba8-9526-39b52cc54e1b",
+      "name": "[DB] Зафиксировать PKCE (VK)",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "SELECT \n    draft_data->>'vk_code_verifier' AS code_verifier,\n    '{{ $json.query.code }}' AS code,\n    '{{ $json.query.state }}' AS state,\n    '{{ $json.query.device_id }}' AS device_id\nFROM users\nWHERE telegram_id = {{ $json.query.state.split('_')[0] }}::bigint;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.7,
+      "position": [
+        -224,
+        3568
+      ],
+      "id": "8c74f97b-8e0e-4807-86d7-80e3fecc9d1f",
+      "name": "[DB] Получить PKCE verifier",
+      "credentials": {
+        "postgres": {
+          "id": "BPj3YUFvNFsoTLCo",
+          "name": "Postgres account"
         }
       }
     }
@@ -2371,7 +2726,7 @@
         ],
         [
           {
-            "node": "[TG] Экран: Онбординг Instagram",
+            "node": "[Logic] Роутер подключений",
             "type": "main",
             "index": 0
           }
@@ -2830,14 +3185,114 @@
           }
         ]
       ]
+    },
+    "[Logic] Роутер подключений": {
+      "main": [
+        [
+          {
+            "node": "[TG] Экран: Онбординг Instagram",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "[Logic] Генератор PKCE (VK)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Auth] Webhook VK OAuth": {
+      "main": [
+        [
+          {
+            "node": "[DB] Получить PKCE verifier",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[VK] Обмен code на Access Token": {
+      "main": [
+        [
+          {
+            "node": "[DB] Save VK Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Save VK Token": {
+      "main": [
+        [
+          {
+            "node": "[TG] Удалить экран онбординга VK",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "[TG] Экран: Успех авторизации VK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Logic] Генератор PKCE (VK)": {
+      "main": [
+        [
+          {
+            "node": "[Crypto] Хеширование SHA-256",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[Crypto] Хеширование SHA-256": {
+      "main": [
+        [
+          {
+            "node": "[DB] Зафиксировать PKCE (VK)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Зафиксировать PKCE (VK)": {
+      "main": [
+        [
+          {
+            "node": "[TG] Экран: Онбординг VK",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "[DB] Получить PKCE verifier": {
+      "main": [
+        [
+          {
+            "node": "[VK] Обмен code на Access Token",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
-  "active": false,
+  "active": true,
   "settings": {
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "c45cbe9d-39dc-49ac-82df-0f0a987719af",
+  "versionId": "d603c5c2-05e1-4d8c-bf1f-902748ec5f43",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "a268c8d0cd0b4b0b8cbf5db0963dffe111ccd80fb9d210f5c0a88a0cec32cc68"
