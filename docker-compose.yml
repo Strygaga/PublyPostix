@@ -26,6 +26,8 @@ services:
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - META_CLIENT_ID=${META_CLIENT_ID}
       - META_CLIENT_SECRET=${META_CLIENT_SECRET}
+      - VK_CLIENT_ID=${VK_CLIENT_ID}
+      - VK_CLIENT_SECRET=${VK_CLIENT_SECRET}
     ports:
       - "5678:5678"
     volumes:
