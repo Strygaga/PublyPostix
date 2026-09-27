@@ -22,10 +22,10 @@
 │ [ТРАНСПОРТНЫЙ ШЛЮЗ & ЯДРО] (publypostix_core)                                         │
 │                                                                                       │
 │  • Event Ingestion Gateway: парсинг команд (/start), сигналов (RPC) и контента        │
-│  • Distributed FSM: управление состояниями (IDLE, WAITING_*) в PostgreSQL            │
-│  • Contract Validation: декларативный допуск медиаформатов (allowed_types)             │
+│  • Distributed FSM: управление состояниями (IDLE, WAITING_*) в PostgreSQL             │
+│  • Contract Validation: декларативный допуск медиаформатов (allowed_types)            │
 │  • Batch Leader Election: синхронизация параллельных вебхуков Telegram-альбомов       │
-│  • Ephemeral UI Sink: сборка динамических дашбордов и сборщик мусора сообщений         │
+│  • Ephemeral UI Sink: сборка динамических дашбордов и сборщик мусора сообщений        │
 └──────────────────┬────────────────────────────────────────────────┬───────────────────┘
                    │ (Data Contract)                                │ (Data Contract)
                    ▼                                                ▼
@@ -33,7 +33,7 @@
 │ [СЕРВИСНЫЙ АДАПТЕР INSTAGRAM]        │         │ [СЕРВИСНЫЙ АДАПТЕР ВКОНТАКТЕ]        │
 │ (Sub-workflow: Instagram Publisher)  │         │ (Pipeline: VK ID & VK API)           │
 │                                      │         │                                      │
-│  • Reels: Init ➔ Polling ➔ Publish   │         │  • OAuth 2.1: динамический PKCE      │
+│  • Reels: Init ➔ Polling ➔ Publish │         │  • OAuth 2.1: динамический PKCE      │
 │  • Feed Posts: Single container flow │         │    (SHA-256 + base64url, RFC 7636)   │
 │  • Stories: 9:16 transcode lifecycle │         │  • Device Binding: сессионный мост   │
 │  • Carousels: Parent-Child API flow  │         │  • В процессе: Upload Server API     │
